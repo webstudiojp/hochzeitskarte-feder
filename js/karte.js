@@ -66,32 +66,31 @@
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const feld = $('tauben');
     if (!feld) return;
-    const GLEIT  = 'M-23 -4 C-16 -7 -8 -7 0 1 C8 -7 16 -7 23 -4';
-    const SCHLAG = 'M-17 -13 C-13 -10 -6 -6 0 1 C6 -6 13 -10 17 -13';
+    // breite: Groesse am Himmel, schlag: Dauer eines halben Fluegelschlags.
+    // Kleinere Voegel stehen weiter hinten, schlagen scheinbar schneller
+    // und sind blasser - so entsteht Tiefe ohne jede Perspektivrechnung.
     const schwarm = [
-      { bahn: 'z1', breite: 32, oben: '13%', verzug: -6,  deckung: .62, schlag: 3.8 },
-      { bahn: 'z1', breite: 25, oben: '17%', verzug: -3,  deckung: .52, schlag: 4.3 },
-      { bahn: 'z2', breite: 22, oben: '20%', verzug: -1,  deckung: .44, schlag: 3.3 },
-      { bahn: 'z3', breite: 27, oben: '9%',  verzug: -24, deckung: .55, schlag: 4.7 },
-      { bahn: 'z4', breite: 18, oben: '25%', verzug: -38, deckung: .38, schlag: 3.6 },
-      { bahn: 'z2', breite: 34, oben: '6%',  verzug: -51, deckung: .6,  schlag: 4.1 },
+      { bahn: 'z1', breite: 54, oben: '11%', verzug: -6,  deckung: .95, schlag: .44 },
+      { bahn: 'z1', breite: 40, oben: '17%', verzug: -3,  deckung: .82, schlag: .39 },
+      { bahn: 'z2', breite: 31, oben: '21%', verzug: -1,  deckung: .66, schlag: .35 },
+      { bahn: 'z3', breite: 44, oben: '8%',  verzug: -24, deckung: .88, schlag: .41 },
+      { bahn: 'z4', breite: 25, oben: '26%', verzug: -38, deckung: .54, schlag: .32 },
+      { bahn: 'z2', breite: 60, oben: '5%',  verzug: -51, deckung: .97, schlag: .47 },
     ];
     schwarm.forEach(v => {
-      const svg = document.createElementNS(SVGNS, 'svg');
-      svg.setAttribute('class', 'vogel ' + v.bahn);
-      svg.setAttribute('viewBox', '-26 -14 52 28');
-      svg.setAttribute('aria-hidden', 'true');
-      svg.style.cssText = 'width:' + v.breite + 'px;top:' + v.oben + ';left:0;'
+      const halter = document.createElement('span');
+      halter.className = 'vogel ' + v.bahn;
+      halter.setAttribute('aria-hidden', 'true');
+      halter.style.cssText = 'width:' + v.breite + 'px;top:' + v.oben + ';left:0;'
         + 'opacity:' + v.deckung + ';animation-delay:' + v.verzug + 's;';
-      const gleit = document.createElementNS(SVGNS, 'path');
-      gleit.setAttribute('d', GLEIT);
-      const schlag = document.createElementNS(SVGNS, 'path');
-      schlag.setAttribute('d', SCHLAG);
-      schlag.setAttribute('class', 'v-schlag');
-      schlag.style.animationDuration = v.schlag + 's';
-      schlag.style.animationDelay = (v.verzug * 0.7) + 's';
-      svg.append(gleit, schlag);
-      feld.appendChild(svg);
+      const bild = document.createElement('i');
+      bild.className = 'vogel-bild';
+      bild.style.setProperty('--schlag', v.schlag + 's');
+      // Versetzter Start, sonst schlaegt der ganze Schwarm im Gleichtakt
+      bild.style.animationDelay = (v.verzug * 0.37) + 's, '
+        + (v.verzug * 0.37) + 's, ' + (v.verzug * 0.37) + 's';
+      halter.appendChild(bild);
+      feld.appendChild(halter);
     });
   })();
 
@@ -287,6 +286,7 @@
     setzen('g-inhaber', C.geschenk.kontoinhaber);
     setzen('g-iban', C.geschenk.iban);
     setzen('btn-iban', S.kopieren);
+    setzen('gabe-tipp', S.gabeOeffnen);
 
     // Rueckmeldung
     setzen('rsvp-titel', S.rsvpTitel);
@@ -394,8 +394,26 @@
   });
 
   /* =========================================================
-     7. IBAN kopieren
+     7. Der Geschenkumschlag und die Bankverbindung darin
      ========================================================= */
+  (function geschenkumschlag() {
+    const knopf = $('btn-gabe');
+    const fach  = $('gabe-fach');
+    if (!knopf || !fach) return;
+    const huelle = knopf.closest('.gabe');
+    knopf.addEventListener('click', () => {
+      const auf = huelle.classList.toggle('auf');
+      knopf.setAttribute('aria-expanded', auf ? 'true' : 'false');
+      if (auf) {
+        // Erst wenn der Deckel offen ist, kommt die Karte zum Vorschein
+        setTimeout(() => { fach.hidden = false; }, 340);
+      } else {
+        fach.hidden = true;
+      }
+    });
+  })();
+
+  /* IBAN kopieren */
   const btnIban = $('btn-iban');
   btnIban.addEventListener('click', async () => {
     const rein = C.geschenk.iban.replace(/\s+/g, '');

@@ -11,7 +11,7 @@ window.HOCHZEIT = {
 
   // Wird von bin/veroeffentlichen.sh gesetzt und an alle Bilder gehaengt,
   // damit Browser nach einer Aenderung nicht die alte Fassung zeigen.
-  version: '202608211218',
+  version: '202608211239',
 
   /* ---------- Sprachen ---------- */
   standardsprache: 'de',
@@ -190,6 +190,7 @@ window.HOCHZEIT = {
       geschenkTitel: 'Geschenke',
       geschenkText: 'Ihr müsst nichts mitbringen. Wer uns trotzdem etwas schenken möchte: '
                   + 'Wir sparen auf die Hochzeitsreise nach Kappadokien.',
+      gabeOeffnen: 'Umschlag öffnen',
       kopieren: 'Kopieren', kopiert: 'Kopiert', kopierenHand: 'Bitte von Hand kopieren',
 
       rsvpTitel: 'Sagt ihr uns Bescheid?',
@@ -310,6 +311,7 @@ window.HOCHZEIT = {
       geschenkTitel: 'Hediye',
       geschenkText: 'Varlığınız bizim için en değerli hediye. Yine de bir şey vermek isteyenler için: '
                   + 'Kapadokya’ya balayı için biriktiriyoruz.',
+      gabeOeffnen: 'Zarfı aç',
       kopieren: 'Kopyala', kopiert: 'Kopyalandı', kopierenHand: 'Lütfen elle kopyalayın',
 
       rsvpTitel: 'Katılım bildirimi',

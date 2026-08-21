@@ -426,25 +426,35 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 84%,transparent 100%);
 }
 
-/* ---- Voegel ----
-   Im Vorbild sind es winzige Silhouetten weit hinten am Himmel. Genau
-   deshalb wirken sie natuerlich: man sieht keine Details, nur Bewegung.
-   Grosse Voegel im Vordergrund verzeihen keinen Animationsfehler. */
+/* ---- Tauben ----
+   Keine gezeichneten Silhouetten mehr, sondern echte Flugbilder: ein
+   Streifen aus 16 Phasen eines vollstaendigen Fluegelschlags, aus einem
+   Video Bild fuer Bild freigestellt. Zwei Schrittanimationen fahren den
+   Streifen ab - waagerecht durch die acht Spalten, senkrecht durch die
+   zwei Zeilen, im halben Takt. Deshalb schlaegt der Fluegel wirklich
+   durch, statt zwischen zwei Stellungen zu blinken. */
 .vogel{
-  position:absolute;overflow:visible;
-  color:#4a5a6b;                      /* Silhouette gegen den hellen Himmel */
+  position:absolute;
   will-change:transform;
 }
-.vogel path{
-  fill:none;stroke:currentColor;stroke-width:1.9;
-  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;
+.vogel-bild{
+  --k:100%;                                   /* Kachel = Elementbreite */
+  display:block;width:100%;aspect-ratio:1;
+  background-image:url("../assets/img/taube.webp");
+  background-repeat:no-repeat;
+  background-size:800% 200%;                  /* 8 Spalten, 2 Zeilen */
+  animation:
+    fluegel-quer var(--schlag,.42s) steps(8,end) infinite,
+    fluegel-zeile calc(var(--schlag,.42s) * 2) steps(2,end) infinite,
+    fluegel-hub  calc(var(--schlag,.42s) * 2) ease-in-out infinite;
 }
-/* Die Gleitstellung liegt immer an, die Schlagstellung blendet in Schueben darueber */
-.v-schlag{opacity:0;animation:v-schub 3.8s steps(1,end) infinite}
-@keyframes v-schub{
-  0%{opacity:1} 5%{opacity:0} 11%{opacity:1} 16%{opacity:0}
-  22%{opacity:1} 27%{opacity:0} 33%{opacity:1} 38%{opacity:0}
-  100%{opacity:0}
+@keyframes fluegel-quer  {from{background-position-x:0%}   to{background-position-x:114.2857%}}
+@keyframes fluegel-zeile {from{background-position-y:0%}   to{background-position-y:200%}}
+/* Ein Vogel steigt im Abschlag und sackt im Aufschlag leicht durch */
+@keyframes fluegel-hub{
+  0%,100%{transform:translateY(0)}
+  30%    {transform:translateY(-7%)}
+  70%    {transform:translateY(5%)}
 }
 
 /* Vier flache, weitraeumige Bahnen. Voegel ziehen, sie huepfen nicht. */
@@ -477,7 +487,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .kulisse-grund,.vogel,.v-schlag{animation:none}
+  .kulisse-grund,.vogel,.vogel-bild{animation:none}
   .vogel{display:none}
 }
 
@@ -955,4 +965,66 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   /* In der Spalte ist kein Platz fuer sechs Punkte nebeneinander */
   .doppel .zeitleiste{grid-template-columns:repeat(3,1fr);gap:26px 14px}
   .doppel .zeitleiste::before{display:none}
+}
+
+/* ---------- Geschenke: der Umschlag ----------
+   Dieselbe Form wie der Umschlag, mit dem die Einladung beginnt - nur
+   klein und in den Farben der Karte. Beim Antippen klappt die Lasche
+   auf, ein Blatt schiebt sich heraus und darunter erscheint die
+   Bankverbindung. */
+.gabe{margin-top:26px}
+.gabe-knopf{
+  display:flex;flex-direction:column;align-items:center;gap:15px;
+  margin:0 auto;padding:8px 18px 2px;border:0;background:none;cursor:pointer;
+  font:inherit;color:inherit;
+}
+.gabe-buehne{position:relative;display:block;width:min(62vw,208px)}
+.gabe-svg{
+  position:relative;z-index:2;width:100%;height:auto;display:block;
+  filter:drop-shadow(0 14px 22px rgba(74,58,32,.22));
+  overflow:visible;
+}
+.gb-korpus     {fill:#e9dcc3}
+.gb-front      {fill:#e0d0b2}
+.gb-kante      {fill:none;stroke:#cdbb99;stroke-width:1.4}
+.gb-laschenform{fill:#f3ead9;stroke:#d2c1a1;stroke-width:1}
+.gb-ring       {fill:none;stroke:var(--akzent);stroke-width:1.8;opacity:.55}
+.gb-herz       {fill:var(--akzent);opacity:.8}
+#gb-lasche{
+  transform-origin:100px 24px;
+  transition:transform .85s cubic-bezier(.5,0,.2,1);
+}
+.gabe-tipp{
+  font-size:var(--t-xs);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--akzent);transition:opacity .4s ease,transform .4s ease;
+}
+.gabe-knopf:hover .gabe-buehne{transform:translateY(-4px)}
+.gabe-buehne{transition:transform .35s var(--ease-out-quart)}
+
+/* --- geoeffnet --- */
+.gabe.auf #gb-lasche  {transform:rotateX(180deg) translateY(-2px)}
+.gabe.auf .gabe-tipp  {opacity:0;transform:translateY(-4px)}
+
+.gabe-fach{
+  max-width:30rem;margin:-6px auto 0;padding:4px 20px 16px;
+  background:linear-gradient(#fffdf7,#f7f1e3);
+  border:1px solid #e2d6bd;border-radius:2px;
+  box-shadow:0 16px 26px -18px rgba(74,58,32,.5);
+  animation:gabe-auf .62s var(--ease-out-expo) both;
+}
+@keyframes gabe-auf{
+  from{opacity:0;transform:translateY(-14px)}
+  to  {opacity:1;transform:none}
+}
+.gabe-fach .iban-zeile{margin-top:6px;border:0;padding:14px 0 6px;flex-wrap:wrap}
+.gabe-fach .iban-nummer{white-space:nowrap;font-size:clamp(.82rem,3.6vw,var(--t-s))}
+/* Auf schmalen Geraeten rutscht der Knopf unter die Nummer, statt sie zu brechen */
+@media (max-width:420px){
+  .gabe-fach .iban-zeile{flex-direction:column;align-items:stretch;gap:12px}
+  .gabe-fach .iban-zeile .knopf{align-self:flex-start}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #gb-lasche,.gabe-tipp,.gabe-buehne{transition:none}
+  .gabe-fach{animation:none}
 }

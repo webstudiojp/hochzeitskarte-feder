@@ -34,8 +34,8 @@ if (!location.hash) {
   addEventListener('load', () => { if (!location.hash) window.scrollTo(0, 0); });
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=202608211218">
-<link rel="stylesheet" href="css/karte.css?v=202608211218">
+<link rel="stylesheet" href="css/style.css?v=202608211239">
+<link rel="stylesheet" href="css/karte.css?v=202608211239">
 </head>
 <body>
 
@@ -114,7 +114,7 @@ if (!location.hash) {
   <button id="skip" class="skip" hidden>Überspringen</button>
 
   <div class="hero-grund" aria-hidden="true">
-    <img src="assets/img/schreibtisch.webp?v=202608211218" alt="" decoding="async">
+    <img src="assets/img/schreibtisch.webp?v=202608211239" alt="" decoding="async">
   </div>
 
   <svg id="scene" class="scene" viewBox="0 0 1000 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -145,7 +145,7 @@ if (!location.hash) {
     </defs>
 
     <!-- Der Schreibtisch -->
-    <image href="assets/img/schreibtisch.webp?v=202608211218" x="0" y="0" width="1000" height="1800"
+    <image href="assets/img/schreibtisch.webp?v=202608211239" x="0" y="0" width="1000" height="1800"
            preserveAspectRatio="xMidYMid slice"/>
 
     <!-- Kerzenschein von links, pulsiert leicht -->
@@ -174,16 +174,16 @@ if (!location.hash) {
     <!-- Das Siegel wird zum Schluss aufgedrueckt -->
     <g id="siegel-gruppe" opacity="0">
       <ellipse cx="508" cy="1196" rx="58" ry="54" fill="#150d06" opacity=".5" filter="url(#weich)"/>
-      <image href="assets/img/siegel.webp?v=202608211218" x="440" y="1198" width="128" height="126"/>
+      <image href="assets/img/siegel.webp?v=202608211239" x="440" y="1198" width="128" height="126"/>
     </g>
 
     <!-- Die Feder -->
     <g id="feder" opacity="0">
       <g id="feder-schatten" opacity=".38">
-        <image href="assets/img/feder.webp?v=202608211218" x="-52" y="-330" width="200" height="382"
+        <image href="assets/img/feder.webp?v=202608211239" x="-52" y="-330" width="200" height="382"
                filter="url(#weich)" style="filter:url(#weich)"/>
       </g>
-      <image href="assets/img/feder.webp?v=202608211218" x="-64" y="-352" width="200" height="382"/>
+      <image href="assets/img/feder.webp?v=202608211239" x="-64" y="-352" width="200" height="382"/>
     </g>
 
     <rect width="1000" height="1800" fill="url(#vignette)" style="pointer-events:none"/>
@@ -204,7 +204,7 @@ if (!location.hash) {
   <!-- ---------- Kopf der Karte ---------- -->
   <section class="sek kopf" id="sek-kopf">
     <div class="kulisse" aria-hidden="true">
-      <img class="kulisse-grund" data-px="5" src="assets/img/rahmen.webp?v=202608211218" alt="" loading="eager" decoding="async">
+      <img class="kulisse-grund" data-px="5" src="assets/img/rahmen.webp?v=202608211239" alt="" loading="eager" decoding="async">
       <div class="tauben" id="tauben"></div>
       <span class="kulisse-schleier"></span>
     </div>
@@ -235,7 +235,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Ein Bild, das die Seite einmal aufreisst ---------- -->
   <section class="grossbild" id="sek-zitat" aria-label="Bildmoment">
-    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=202608211218" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=202608211239" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="gb-gross rv" data-rv="1" id="zitat-gross"></p>
@@ -244,7 +244,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Countdown (Kontrastmoment, volle Breite) ---------- -->
   <section class="sek-breit countdown" id="sek-countdown" aria-label="Countdown">
-    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=202608211218" alt="" loading="lazy" decoding="async">
+    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=202608211239" alt="" loading="lazy" decoding="async">
     <span class="cd-schleier"></span>
     <p class="ueberzeile hell" id="cd-ueber">Noch</p>
     <div class="cd-reihe" id="cd-reihe" role="timer" aria-live="off">
@@ -276,7 +276,7 @@ if (!location.hash) {
   <section class="sek ort" id="sek-ort">
     <h2 class="sek-titel rv" data-rv="1" id="ort-titel">Wo</h2>
     <figure class="ort-bild rv" data-rv="2">
-      <img data-px="6" src="assets/img/g3-bogen.webp?v=202608211218" id="ort-foto" alt="" loading="lazy" decoding="async">
+      <img data-px="6" src="assets/img/g3-bogen.webp?v=202608211239" id="ort-foto" alt="" loading="lazy" decoding="async">
     </figure>
     <div class="ort-raster">
       <div>
@@ -333,12 +333,38 @@ if (!location.hash) {
   <section class="sek geschenk" id="sek-geschenk">
     <h2 class="sek-titel rv" data-rv="1" id="geschenk-titel">Geschenke</h2>
     <p class="fliess rv" data-rv="2" id="g-text"></p>
-    <div class="iban-zeile rv" data-rv="3">
-      <div>
-        <span class="iban-label" id="g-inhaber"></span>
-        <span class="iban-nummer" id="g-iban"></span>
+    <!-- Die Bankverbindung steckt in einem Umschlag - derselbe, mit dem
+         die Einladung beginnt. Wer nichts schenken will, sieht die
+         Kontonummer gar nicht erst; das nimmt der Bitte die Aufdringlichkeit. -->
+    <div class="gabe rv" data-rv="3">
+      <button class="gabe-knopf" id="btn-gabe" type="button"
+              aria-expanded="false" aria-controls="gabe-fach">
+        <span class="gabe-buehne" aria-hidden="true">
+          <svg viewBox="0 0 200 140" class="gabe-svg">
+            <rect x="4" y="24" width="192" height="112" rx="6" class="gb-korpus"/>
+            <path d="M4 30 L100 96 L196 30" class="gb-kante"/>
+            <path d="M4 136 L100 74 L196 136 Z" class="gb-front"/>
+            <path d="M4 136 L4 30 L100 92 L196 30 L196 136 Z" class="gb-front"/>
+            <!-- Siegel und Herz sitzen auf der Lasche, also klappen sie mit auf -->
+            <g class="gb-lasche" id="gb-lasche">
+              <path d="M4 30 L100 96 L196 30 L196 24 L4 24 Z" class="gb-laschenform"/>
+              <path class="gb-ring" d="M100 66 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0"/>
+              <path class="gb-herz" d="M100 61 c-3.4-5-11-3.4-11 1.7 0 5 6.8 8.5 11 12.8 4.2-4.3 11-7.8 11-12.8 0-5.1-7.6-6.7-11-1.7z"/>
+            </g>
+          </svg>
+        </span>
+        <span class="gabe-tipp" id="gabe-tipp">Umschlag öffnen</span>
+      </button>
+
+      <div class="gabe-fach" id="gabe-fach" hidden>
+        <div class="iban-zeile">
+          <div>
+            <span class="iban-label" id="g-inhaber"></span>
+            <span class="iban-nummer" id="g-iban"></span>
+          </div>
+          <button class="knopf knopf-klein" id="btn-iban" type="button">Kopieren</button>
+        </div>
       </div>
-      <button class="knopf knopf-klein" id="btn-iban" type="button">Kopieren</button>
     </div>
   </section>
   <!-- ---------- Rueckmeldung ---------- -->
@@ -389,7 +415,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Abschied ---------- -->
   <section class="grossbild abschied" id="sek-abschied" aria-label="Abschied">
-    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=202608211218" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=202608211239" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="ab-gross rv" data-rv="1" id="abschied-gross"></p>
@@ -422,9 +448,9 @@ if (!location.hash) {
   <p class="lupe-text" id="lupe-text"></p>
 </div>
 
-<script src="js/config.js?v=202608211218"></script>
-<script src="js/schreibschrift.js?v=202608211218"></script>
-<script src="js/hero.js?v=202608211218"></script>
-<script src="js/karte.js?v=202608211218"></script>
+<script src="js/config.js?v=202608211239"></script>
+<script src="js/schreibschrift.js?v=202608211239"></script>
+<script src="js/hero.js?v=202608211239"></script>
+<script src="js/karte.js?v=202608211239"></script>
 </body>
 </html>
