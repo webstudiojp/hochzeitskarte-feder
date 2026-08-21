@@ -33,4 +33,4 @@ if ! git remote get-url origin >/dev/null 2>&1; then
 fi
 git push -q origin "$(git branch --show-current)"
 echo "Live in etwa einer Minute:"
-echo "https://webstudiojp.github.io/hochzeitskarte/"
+echo "https://webstudiojp.github.io/hochzeitskarte-feder/"

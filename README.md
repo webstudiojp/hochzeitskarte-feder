@@ -1,9 +1,13 @@
-# Digitale Hochzeitskarte — Arbeitskopie
+# Digitale Hochzeitskarte — Variante Feder
 
-> Kopie der fertigen Demo vom 20.08.2026, angelegt zum Weiterarbeiten.
-> Das Original liegt unter `~/Digitale Hochzeitskarten`, ist dort mit dem
-> Tag `demo-v1` gesichert und laeuft unveraendert auf
-> https://webstudiojp.github.io/hochzeitskarte-demo/
+> Dritte Fassung. Unterschied zu den anderen: Der Auftakt zeigt keinen
+> fahrenden Wagen, sondern einen Schreibtisch bei Kerzenlicht — eine Feder
+> schreibt die Namen auf Buettenpapier, dann Herz und Wachssiegel.
+> Alles ab dem Umschlag ist identisch zur Fassung unter
+> https://webstudiojp.github.io/hochzeitskarte/
+>
+> Laeuft unter https://webstudiojp.github.io/hochzeitskarte-feder/
+> Lokaler Server auf Port **4324**.
 >
 > Diese Kopie hat ein **eigenes Repository** und laeuft unter
 > https://webstudiojp.github.io/hochzeitskarte/ — getrennt vom Original,

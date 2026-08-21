@@ -14,8 +14,8 @@
 <meta property="og:site_name" content="Furkan &amp; Dilara">
 <meta property="og:title" content="Furkan &amp; Dilara — Wir heiraten">
 <meta property="og:description" content="1. Januar 2027 · Schloss Benrath, Düsseldorf. Hier ist unsere Einladung.">
-<meta property="og:url" content="https://webstudiojp.github.io/hochzeitskarte/">
-<meta property="og:image" content="https://webstudiojp.github.io/hochzeitskarte/assets/img/vorschau.jpg">
+<meta property="og:url" content="https://webstudiojp.github.io/hochzeitskarte-feder/">
+<meta property="og:image" content="https://webstudiojp.github.io/hochzeitskarte-feder/assets/img/vorschau.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Furkan und Dilara, 1. Januar 2027">
@@ -34,8 +34,8 @@ if (!location.hash) {
   addEventListener('load', () => { if (!location.hash) window.scrollTo(0, 0); });
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=20260820224113">
-<link rel="stylesheet" href="css/karte.css?v=20260820224113">
+<link rel="stylesheet" href="css/style.css?v=20260821104040">
+<link rel="stylesheet" href="css/karte.css?v=20260821104040">
 </head>
 <body>
 
@@ -114,56 +114,70 @@ if (!location.hash) {
   <button id="skip" class="skip" hidden>Überspringen</button>
 
   <div class="hero-grund" aria-hidden="true">
-    <img src="assets/img/allee.webp?v=20260820224113" alt="" decoding="async">
+    <img src="assets/img/schreibtisch.webp?v=20260821104040" alt="" decoding="async">
   </div>
 
   <svg id="scene" class="scene" viewBox="0 0 1000 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
-      <!-- Maske: enthuellt den Schriftzug fortschreitend von oben nach unten -->
+      <!-- Die Tinte erscheint, indem diese Maske von links nach rechts waechst -->
       <mask id="revealMask">
-        <rect id="reveal-rect" x="0" y="0" width="1000" height="0" fill="#fff"/>
+        <rect id="reveal-rect" x="0" y="0" width="0" height="1800" fill="#fff"/>
       </mask>
-      <filter id="tempo" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur id="tempo-blur" stdDeviation="0 0"/>
-      </filter>
       <filter id="weich" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="20"/>
+        <feGaussianBlur stdDeviation="14"/>
       </filter>
+      <filter id="tinte" x="-20%" y="-20%" width="140%" height="140%">
+        <!-- Leichte Unruhe an den Raendern, damit die Schrift nach Tinte
+             aussieht und nicht nach Vektorgrafik -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="rauschen"/>
+        <feDisplacementMap in="SourceGraphic" in2="rauschen" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <radialGradient id="kerzenschein" cx="8%" cy="46%" r="62%">
+        <stop offset="0%"   stop-color="#ffd9a0" stop-opacity=".34"/>
+        <stop offset="60%"  stop-color="#ffc98a" stop-opacity=".10"/>
+        <stop offset="100%" stop-color="#ffc98a" stop-opacity="0"/>
+      </radialGradient>
       <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#2a2118" stop-opacity=".5"/>
-        <stop offset="26%"  stop-color="#2a2118" stop-opacity="0"/>
-        <stop offset="70%"  stop-color="#2a2118" stop-opacity="0"/>
-        <stop offset="100%" stop-color="#2a2118" stop-opacity=".72"/>
+        <stop offset="0%"   stop-color="#120c06" stop-opacity=".54"/>
+        <stop offset="26%"  stop-color="#120c06" stop-opacity="0"/>
+        <stop offset="72%"  stop-color="#120c06" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#120c06" stop-opacity=".7"/>
       </linearGradient>
     </defs>
 
-    <!-- Die Allee -->
-    <image href="assets/img/allee.webp?v=20260820224113" x="0" y="0" width="1000" height="1800"
+    <!-- Der Schreibtisch -->
+    <image href="assets/img/schreibtisch.webp?v=20260821104040" x="0" y="0" width="1000" height="1800"
            preserveAspectRatio="xMidYMid slice"/>
 
-    <!-- Perlen, die aus dem Heck rieseln -->
-    <g id="pearls"></g>
+    <!-- Kerzenschein von links, pulsiert leicht -->
+    <rect id="kerze" width="1000" height="1800" fill="url(#kerzenschein)" style="pointer-events:none"/>
 
-    <!-- Schriftzug + Herz, als Perlenkette, maskiert -->
-    <g mask="url(#revealMask)">
-      <g id="script-group">
-      </g>
+    <!-- Staub im Lichtkegel -->
+    <g id="staub"></g>
+
+    <!-- Die Tinte auf dem Papier -->
+    <g mask="url(#revealMask)" filter="url(#tinte)">
+      <g id="script-group"></g>
+      <path id="heart" opacity="0" fill="none" stroke="#2a1a12" stroke-width="5"
+            stroke-linecap="round"
+            d="M500 1058 c-18 -27 -58 -21 -58 10 c0 27 36 46 58 68 c22 -22 58 -41 58 -68 c0 -31 -40 -37 -58 -10 z"/>
     </g>
 
-    <path id="heart" opacity="0" fill="none" stroke="#fff6e8" stroke-width="6"
-            stroke-linecap="round" stroke-dasharray="0.5 9"
-            d="M500 1284 c-22 -33 -70 -25 -70 12 c0 33 44 55 70 81 c26 -26 70 -48 70 -81 c0 -37 -48 -45 -70 -12 z"/>
-
-    <!-- Der Wagen -->
-    <g id="car" opacity="0">
-      <!-- Sonne steht links: der Schatten faellt nach rechts unten -->
-      <ellipse cx="92" cy="104" rx="112" ry="330" fill="#120d07" opacity=".44" filter="url(#weich)"/>
-      <g filter="url(#tempo)">
-        <image href="assets/img/wagen.webp?v=20260820224113" x="-150" y="-401" width="300" height="802"/>
-      </g>
+    <!-- Das Siegel wird zum Schluss aufgedrueckt -->
+    <g id="siegel-gruppe" opacity="0">
+      <ellipse cx="508" cy="1196" rx="58" ry="54" fill="#150d06" opacity=".5" filter="url(#weich)"/>
+      <image href="assets/img/siegel.webp?v=20260821104040" x="440" y="1198" width="128" height="126"/>
     </g>
 
-    <!-- Licht + Vignette -->
+    <!-- Die Feder -->
+    <g id="feder" opacity="0">
+      <g id="feder-schatten" opacity=".38">
+        <image href="assets/img/feder.webp?v=20260821104040" x="-52" y="-330" width="200" height="382"
+               filter="url(#weich)" style="filter:url(#weich)"/>
+      </g>
+      <image href="assets/img/feder.webp?v=20260821104040" x="-64" y="-352" width="200" height="382"/>
+    </g>
+
     <rect width="1000" height="1800" fill="url(#vignette)" style="pointer-events:none"/>
   </svg>
 
@@ -182,7 +196,7 @@ if (!location.hash) {
   <!-- ---------- Kopf der Karte ---------- -->
   <section class="sek kopf" id="sek-kopf">
     <div class="kulisse" aria-hidden="true">
-      <img class="kulisse-grund" data-px="5" src="assets/img/rahmen.webp?v=20260820224113" alt="" loading="eager" decoding="async">
+      <img class="kulisse-grund" data-px="5" src="assets/img/rahmen.webp?v=20260821104040" alt="" loading="eager" decoding="async">
       <div class="tauben" id="tauben"></div>
       <span class="kulisse-schleier"></span>
     </div>
@@ -213,7 +227,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Ein Bild, das die Seite einmal aufreisst ---------- -->
   <section class="grossbild" id="sek-zitat" aria-label="Bildmoment">
-    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=20260821104040" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="gb-gross rv" data-rv="1" id="zitat-gross"></p>
@@ -222,7 +236,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Countdown (Kontrastmoment, volle Breite) ---------- -->
   <section class="sek-breit countdown" id="sek-countdown" aria-label="Countdown">
-    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=20260821104040" alt="" loading="lazy" decoding="async">
     <span class="cd-schleier"></span>
     <p class="ueberzeile hell" id="cd-ueber">Noch</p>
     <div class="cd-reihe" id="cd-reihe" role="timer" aria-live="off">
@@ -254,7 +268,7 @@ if (!location.hash) {
   <section class="sek ort" id="sek-ort">
     <h2 class="sek-titel rv" data-rv="1" id="ort-titel">Wo</h2>
     <figure class="ort-bild rv" data-rv="2">
-      <img data-px="6" src="assets/img/g3-bogen.webp?v=20260820224113" id="ort-foto" alt="" loading="lazy" decoding="async">
+      <img data-px="6" src="assets/img/g3-bogen.webp?v=20260821104040" id="ort-foto" alt="" loading="lazy" decoding="async">
     </figure>
     <div class="ort-raster">
       <div>
@@ -367,7 +381,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Abschied ---------- -->
   <section class="grossbild abschied" id="sek-abschied" aria-label="Abschied">
-    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=20260821104040" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="ab-gross rv" data-rv="1" id="abschied-gross"></p>
@@ -400,8 +414,8 @@ if (!location.hash) {
   <p class="lupe-text" id="lupe-text"></p>
 </div>
 
-<script src="js/config.js?v=20260820224113"></script>
-<script src="js/hero.js?v=20260820224113"></script>
-<script src="js/karte.js?v=20260820224113"></script>
+<script src="js/config.js?v=20260821104040"></script>
+<script src="js/hero.js?v=20260821104040"></script>
+<script src="js/karte.js?v=20260821104040"></script>
 </body>
 </html>

@@ -199,3 +199,29 @@ body.locked{overflow:hidden}
   }
   .hero-caption.show{transform:translateX(-50%)}
 }
+
+/* ---------- Die Schreibszene ---------- */
+#kerze{
+  animation:kerzenflackern 5.2s ease-in-out infinite;
+  transform-origin:6% 46%;
+}
+@keyframes kerzenflackern{
+  0%,100%{opacity:1}
+  18%    {opacity:.86}
+  31%    {opacity:1.06}
+  47%    {opacity:.9}
+  63%    {opacity:1.03}
+  81%    {opacity:.88}
+}
+@keyframes staub-treiben{
+  from{transform:translate3d(0,40px,0);opacity:0}
+  16% {opacity:.34}
+  84% {opacity:.24}
+  to  {transform:translate3d(46px,-260px,0);opacity:0}
+}
+#feder{will-change:transform}
+#feder-schatten{transform:translate(16px,22px)}
+
+@media (prefers-reduced-motion:reduce){
+  #kerze,#staub circle{animation:none}
+}
