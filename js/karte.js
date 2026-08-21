@@ -95,7 +95,133 @@
   })();
 
   /* =========================================================
-     3. Stilisierte Lageskizze
+     3. Zierwerk — was durch die Abschnitte treibt
+
+     Ein Bauplan, viele Besetzungen. Jeder Abschnitt bekommt sein
+     eigenes Kleinteil, eigene Bahnen, eigenes Tempo — damit die Seite
+     nicht acht Mal denselben Effekt zeigt. Erzeugt wird erst beim
+     Herankommen, angehalten beim Verlassen: sonst laufen auf einem
+     Telefon zweihundert Animationen, die niemand ansieht.
+     ========================================================= */
+  const zierRnd = (() => {
+    let z = 90210;
+    return () => (z = (z * 1103515245 + 12345) % 2147483648) / 2147483648;
+  })();
+
+  const ZIERWERK = {
+    // Blütenblätter: fallen, taumeln, drehen sich weg
+    bluete(r, o) {
+      const gr = (o.klein || 9) + r() * ((o.gross || 20) - (o.klein || 9));
+      const e = document.createElement('span');
+      e.className = 'z-bluete';
+      e.style.cssText =
+        'left:' + (r() * 100).toFixed(1) + '%;top:0;' +
+        'width:' + gr.toFixed(1) + 'px;height:' + (gr * 0.74).toFixed(1) + 'px;' +
+        'background:' + o.toene[(r() * o.toene.length) | 0] + ';' +
+        'opacity:' + (0.26 + r() * 0.34).toFixed(2) + ';' +
+        '--drift:' + ((r() * 2 - 1) * 90).toFixed(0) + 'px;' +
+        '--dreh:' + (160 + r() * 420).toFixed(0) + 'deg;' +
+        'animation-duration:' + (o.dauer[0] + r() * (o.dauer[1] - o.dauer[0])).toFixed(1) + 's;' +
+        'animation-delay:-' + (r() * 26).toFixed(1) + 's;';
+      return e;
+    },
+    // Konfetti: Papierschnipsel, die sich beim Fallen um sich selbst kippen
+    konfetti(r, o) {
+      const b = 5 + r() * 6;
+      const e = document.createElement('span');
+      e.className = 'z-konfetti';
+      e.style.cssText =
+        'left:' + (r() * 100).toFixed(1) + '%;top:0;' +
+        'width:' + b.toFixed(1) + 'px;height:' + (b * (1.4 + r())).toFixed(1) + 'px;' +
+        'background:' + o.toene[(r() * o.toene.length) | 0] + ';' +
+        'opacity:' + (0.5 + r() * 0.4).toFixed(2) + ';' +
+        (r() < 0.4 ? 'border-radius:2px;' : '') +
+        '--drift:' + ((r() * 2 - 1) * 120).toFixed(0) + 'px;' +
+        '--dreh:' + (200 + r() * 500).toFixed(0) + 'deg;' +
+        '--kipp:' + (0.5 + r() * 1.1).toFixed(2) + 's;' +
+        'animation-duration:' + (o.dauer[0] + r() * (o.dauer[1] - o.dauer[0])).toFixed(1) + 's,' +
+          (0.5 + r() * 1.1).toFixed(2) + 's;' +
+        'animation-delay:-' + (r() * 20).toFixed(1) + 's,-' + (r() * 3).toFixed(1) + 's;';
+      return e;
+    },
+    // Federn: sinken langsam und pendeln dabei seitlich aus
+    feder(r, o) {
+      const gr = 22 + r() * 30;
+      const e = document.createElement('span');
+      e.className = 'z-feder';
+      e.style.cssText =
+        'left:' + (6 + r() * 88).toFixed(1) + '%;top:0;' +
+        'width:' + gr.toFixed(0) + 'px;height:' + (gr * 1.9).toFixed(0) + 'px;' +
+        'background-image:url("assets/img/feder.webp");' +
+        '--deck:' + (0.18 + r() * 0.24).toFixed(2) + ';' +
+        '--dauer:' + (17 + r() * 15).toFixed(1) + 's;' +
+        '--pendel:' + (3.4 + r() * 2.6).toFixed(1) + 's;' +
+        'animation-delay:-' + (r() * 26).toFixed(1) + 's,-' + (r() * 5).toFixed(1) + 's;';
+      return e;
+    },
+    // Funken: Lichtpunkte, die aufglimmen und wieder vergehen
+    funke(r, o) {
+      const gr = 2 + r() * 4;
+      const e = document.createElement('span');
+      e.className = 'z-funke';
+      e.style.cssText =
+        'left:' + (r() * 100).toFixed(1) + '%;top:' + (r() * 100).toFixed(1) + '%;' +
+        'width:' + gr.toFixed(1) + 'px;height:' + gr.toFixed(1) + 'px;' +
+        'background:' + o.toene[(r() * o.toene.length) | 0] + ';' +
+        'box-shadow:0 0 ' + (gr * 3).toFixed(0) + 'px ' + o.toene[0] + ';' +
+        '--deck:' + (0.5 + r() * 0.45).toFixed(2) + ';' +
+        '--dauer:' + (2.6 + r() * 4).toFixed(1) + 's;' +
+        'animation-delay:-' + (r() * 8).toFixed(1) + 's;';
+      return e;
+    },
+    // Ballons: steigen auf, wiegen sich, ziehen ein Band hinter sich
+    ballon(r, o) {
+      const gr = 16 + r() * 26;
+      const ton = o.toene[(r() * o.toene.length) | 0];
+      const e = document.createElement('span');
+      e.className = 'z-ballon';
+      e.style.cssText =
+        'left:' + (4 + r() * 92).toFixed(1) + '%;top:0;' +
+        'width:' + gr.toFixed(0) + 'px;height:' + (gr * 1.18).toFixed(0) + 'px;' +
+        'background-color:' + ton + ';color:' + ton + ';' +
+        'opacity:' + (0.42 + r() * 0.34).toFixed(2) + ';' +
+        '--drift:' + ((r() * 2 - 1) * 70).toFixed(0) + 'px;' +
+        '--dauer:' + (18 + r() * 16).toFixed(1) + 's;' +
+        '--wiegen:' + (4 + r() * 3).toFixed(1) + 's;' +
+        'animation-delay:-' + (r() * 30).toFixed(1) + 's,-' + (r() * 6).toFixed(1) + 's;';
+      return e;
+    },
+  };
+
+  function zierSetzen(sektion, art, anzahl, opt) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!sektion || !ZIERWERK[art]) return;
+    sektion.classList.add('hat-zier');
+    const feld = document.createElement('div');
+    feld.className = 'zierfeld ruht';
+    feld.setAttribute('aria-hidden', 'true');
+    const o = Object.assign({ toene: ['#e7d9c4'], dauer: [16, 30] }, opt || {});
+    // Auf schmalen Geraeten weniger Teilchen - dort zaehlt jedes Bild
+    const n = innerWidth < 700 ? Math.max(4, Math.round(anzahl * 0.6)) : anzahl;
+    for (let i = 0; i < n; i++) feld.appendChild(ZIERWERK[art](zierRnd, o));
+    sektion.insertBefore(feld, sektion.firstChild);
+
+    // Die Bahnlaenge ist die Hoehe des Abschnitts. In Prozent ginge es
+    // nicht: transform:translateY(%) misst an der eigenen Groesse.
+    const bahnSetzen = () =>
+      feld.style.setProperty('--weg', (sektion.offsetHeight + 110) + 'px');
+    bahnSetzen();
+    addEventListener('resize', bahnSetzen, { passive: true });
+    addEventListener('load', bahnSetzen);
+
+    // Nur laufen lassen, solange der Abschnitt in Sicht ist
+    new IntersectionObserver(eintraege => {
+      eintraege.forEach(e => feld.classList.toggle('ruht', !e.isIntersecting));
+    }, { rootMargin: '120px' }).observe(sektion);
+  }
+
+  /* =========================================================
+     4. Stilisierte Lageskizze
      Selbst gezeichnet: kein Kartendienst heisst keine Einwilligung
      und keine Lizenzfrage an fremdem Kartenmaterial.
      ========================================================= */
@@ -125,16 +251,43 @@
       + '<path d="M234 0 C246 44 226 78 238 118 C248 152 234 178 246 200" fill="none" stroke="url(#k-wasser)" stroke-width="10" stroke-linecap="round"/>'
       + '<path d="M0 58 L320 42" stroke="#e6dbc6" stroke-width="8" fill="none" stroke-linecap="round"/>'
       + '<path d="M0 58 L320 42" stroke="#d5c7ac" stroke-width="1" fill="none" stroke-dasharray="7 7"/>'
-      + '<path d="M72 200 L96 104 L188 88" stroke="#e6dbc6" stroke-width="5.5" fill="none" stroke-linecap="round"/>'
-      + '<path d="M96 104 L58 50" stroke="#ece3d2" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      + '<path class="k-weg" d="M72 200 L96 104 L188 88" stroke="#e6dbc6" stroke-width="5.5" fill="none" stroke-linecap="round"/>'
+      + '<path class="k-weg" d="M96 104 L58 50" stroke="#ece3d2" stroke-width="3" fill="none" stroke-linecap="round"/>'
       + '<g>'
       +   '<rect x="150" y="72" width="48" height="30" rx="1.5" fill="#e0d3ba" stroke="#c9b795" stroke-width="1"/>'
       +   '<rect x="164" y="63" width="20" height="10" rx="1.5" fill="#e0d3ba" stroke="#c9b795" stroke-width="1"/>'
       +   '<path d="M150 82 h48" stroke="#c9b795" stroke-width=".8"/>'
       + '</g>'
-      + '<path d="M174 40 a12 12 0 1 1 .01 0 M174 40 L174 62" fill="none" stroke="#a8894e" stroke-width="2.4" stroke-linecap="round"/>'
-      + '<circle cx="174" cy="28" r="4.6" fill="#a8894e"/>';
+      + '<g class="k-nadel">'
+      +   '<ellipse class="k-schatten" cx="174" cy="63" rx="7" ry="2.4" fill="#8a7550" opacity=".3"/>'
+      +   '<path d="M174 40 a12 12 0 1 1 .01 0 M174 40 L174 62" fill="none" stroke="#a8894e" stroke-width="2.4" stroke-linecap="round"/>'
+      +   '<circle cx="174" cy="28" r="4.6" fill="#a8894e"/>'
+      + '</g>';
     halter.appendChild(s);
+
+    // Die Wege zeichnen sich, sobald die Skizze ins Bild kommt, und
+    // erst danach faellt die Nadel auf den Ort. Ohne diese Reihenfolge
+    // steht die Karte einfach da.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const wege = [...s.querySelectorAll('.k-weg')];
+      wege.forEach(w => {
+        const L = w.getTotalLength();
+        w.style.strokeDasharray = L;
+        w.style.strokeDashoffset = L;
+      });
+      halter.classList.remove('gezeichnet');
+      new IntersectionObserver((eintraege, beob) => {
+        eintraege.forEach(e => {
+          if (!e.isIntersecting) return;
+          halter.classList.add('gezeichnet');
+          wege.forEach((w, i) => {
+            w.style.transitionDelay = (0.15 + i * 0.45) + 's';
+            w.style.strokeDashoffset = '0';
+          });
+          beob.disconnect();
+        });
+      }, { threshold: 0.35 }).observe(halter);
+    }
   }
 
   /* =========================================================
@@ -168,6 +321,8 @@
     // Anrede
     setzen('a-text', S.anredeText);
     setzen('a-gruss', S.anredeGruss);
+    const briefEl = $('brief');
+    if (briefEl) briefEl.dataset.monogramm = C.braut.charAt(0);
 
     // Bildmomente
     setzen('zitat-gross', S.zitat);
@@ -677,6 +832,16 @@
   (function scrollEffekte() {
     const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const leiste = $('zeitleiste');
+    // Die Leiste wird bei jedem Sprachwechsel neu aufgebaut, die alten
+    // Verweise zeigen dann ins Leere. Deshalb bei Bedarf nachfassen.
+    let stationen = [];
+    const stationenHolen = () => {
+      if (!leiste) return stationen;
+      if (!stationen.length || !stationen[0].isConnected) {
+        stationen = [...leiste.querySelectorAll('.zl-punkt')];
+      }
+      return stationen;
+    };
 
     /* ---- Parallaxe ----
        Jedes Bild traegt data-px mit seiner Staerke in Prozent. Genau um
@@ -726,11 +891,18 @@
         b.el.style.transform = 'translate3d(0,' + gerundet + 'px,0)';
       });
 
-      // Die Linie der Zeitleiste waechst mit dem Lesen
+      // Die Linie der Zeitleiste waechst mit dem Lesen - und jede
+      // Station geht an, sobald die Linie sie erreicht hat.
       if (leiste) {
         const r = leiste.getBoundingClientRect();
-        const p = (H * 0.72 - r.top) / Math.max(1, r.height);
-        leiste.style.setProperty('--zl-fortschritt', Math.max(0, Math.min(1, p)).toFixed(3));
+        const p = Math.max(0, Math.min(1, (H * 0.72 - r.top) / Math.max(1, r.height)));
+        leiste.style.setProperty('--zl-fortschritt', p.toFixed(3));
+        const spitze = r.top + r.height * p;
+        const st = stationenHolen();
+        for (let i = 0; i < st.length; i++) {
+          const k = st[i].getBoundingClientRect();
+          st[i].classList.toggle('erreicht', spitze >= k.top + k.height * 0.34);
+        }
       }
     }
 
@@ -744,4 +916,57 @@
     // Nach dem Laden der Bilder noch einmal, dann stimmen die Hoehen
     addEventListener('load', takt);
   })();
+
+  /* =========================================================
+     11. Die Besetzung: jeder Abschnitt bekommt sein eigenes Kleinteil
+
+     Nichts davon ist beliebig gestreut. Der Brief bekommt Federn, weil
+     er geschrieben wurde. Der Dresscode bekommt Konfetti in genau den
+     Farben, um die er bittet. Die Zusage bekommt Ballons. So traegt
+     jeder Abschnitt sein eigenes Motiv, statt acht Mal dasselbe.
+     ========================================================= */
+  (function besetzung() {
+    const S = id => document.getElementById(id);
+    // Auf dem hellen Leinengrund verschwindet zartes Pastell. Die Toene
+    // sind deshalb deutlich gesetzt und die Deckkraft regelt die Ruhe.
+    const G = { salbei:'#a7bd9b', salbeiTief:'#7e9673', rose:'#e5b49c', roseTief:'#c98a6c',
+                sand:'#d9bd8a', gold:'#b8933f', creme:'#ecd9b8', himmel:'#9dbdd0',
+                weiss:'#ffffff' };
+
+    // Der Brief: hier hat jemand mit der Feder geschrieben
+    zierSetzen(S('sek-anrede'), 'feder', 5);
+
+    // Der Tagesablauf liegt im Gruenen
+    zierSetzen(S('sek-ablauf'), 'bluete', 16,
+      { toene:[G.salbei, G.salbeiTief, G.creme], dauer:[22, 40], klein:8, gross:17 });
+
+    // Vor der Trauung: Blueten, die vom Bogen herunterwehen
+    zierSetzen(S('sek-ort'), 'bluete', 12,
+      { toene:[G.weiss, G.creme, G.rose], dauer:[26, 46], klein:7, gross:15 });
+
+    // Der Dresscode wirft genau die Farben, um die er bittet - nicht
+    // irgendein Pastell, sondern die Hexwerte aus der Konfiguration.
+    zierSetzen(S('sek-dresscode'), 'konfetti', 26,
+      { toene: (C.farben || []).map(f => f.hex), dauer:[13, 24] });
+
+    // Die Familien stehen im warmen Licht
+    zierSetzen(S('sek-familien'), 'bluete', 14,
+      { toene:[G.rose, G.roseTief, G.creme], dauer:[24, 42], klein:8, gross:16 });
+
+    // Kerzen ueber der Tafel
+    zierSetzen(S('sek-wissen'), 'funke', 22, { toene:[G.gold, G.sand] });
+    zierSetzen(S('sek-galerie'), 'funke', 26, { toene:[G.gold, G.creme] });
+
+    // Das Album sammelt Augenblicke ein
+    zierSetzen(S('sek-erinnerung'), 'funke', 18, { toene:[G.himmel, G.weiss] });
+
+    // Der Umschlag liegt in goldenem Schnipselregen
+    zierSetzen(S('sek-geschenk'), 'konfetti', 20,
+      { toene:[G.gold, G.sand, G.creme], dauer:[17, 30] });
+
+    // Und wer zusagt, steht schon mitten in der Feier
+    zierSetzen(S('sek-rsvp'), 'ballon', 9,
+      { toene:[G.rose, G.sand, G.salbei, G.himmel] });
+  })();
+
 })();

@@ -57,6 +57,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   font-size:var(--t-m);
   line-height:1.65;
   position:relative;
+  overflow-x:clip;      /* das Zierwerk laeuft breiter als die Textspalte */
 }
 
 /* Rhythmus variiert bewusst je Abschnitt statt ueberall gleichem Abstand */
@@ -841,54 +842,101 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   stroke-linecap:round;stroke-linejoin:round;
 }
 
+/* Auf dem Telefon eine echte Leiste: eine Linie, an der die Stationen
+   haengen. Sie waechst beim Lesen mit und jede Station geht an, sobald
+   die Linie sie erreicht - der Tag laeuft ab, waehrend man scrollt.
+   Ein Raster aus Kreisen kann das nicht. */
 .zeitleiste{
-  list-style:none;margin:0;padding:0;position:relative;
-  display:grid;grid-template-columns:repeat(2,1fr);
-  gap:clamp(26px,6vw,34px) clamp(14px,4vw,22px);
+  list-style:none;margin:0;padding:0 0 0 4px;position:relative;
+  display:grid;gap:clamp(22px,5vw,30px);
 }
 .zl-punkt{
-  display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:0;border:0;position:relative;
+  display:grid;grid-template-columns:clamp(38px,10vw,46px) 1fr;
+  align-items:start;column-gap:clamp(14px,4vw,20px);row-gap:0;
+  text-align:left;padding:0;border:0;position:relative;
 }
+/* Das Zeichen steht links neben dem ganzen Block, der Text rechts.
+   Ohne feste Zuweisung fliessen die Zeilen abwechselnd in beide
+   Spalten - dann steht der Ort neben dem Titel statt darunter. */
+.zl-punkt > .zl-kopf{grid-column:1;grid-row:1 / span 4;align-self:start}
+.zl-punkt > .zl-zeit,
+.zl-punkt > .zl-titel,
+.zl-punkt > .zl-ort,
+.zl-punkt > .zl-notiz{grid-column:2}
 .zl-kopf{
   width:clamp(38px,10vw,46px);height:clamp(38px,10vw,46px);
-  display:grid;place-items:center;margin-bottom:11px;
+  display:grid;place-items:center;margin:0;
   color:var(--salbei-tief);
   border:1px solid #cfdac8;border-radius:50%;
-  background:rgba(255,253,248,.55);
+  background:#f2f6ee;
+  position:relative;z-index:1;
+  transition:color .5s var(--ease-out-quart),
+             border-color .5s var(--ease-out-quart),
+             background-color .5s var(--ease-out-quart),
+             box-shadow .6s var(--ease-out-quart);
 }
+/* Erreichte Stationen stehen im Licht, kommende bleiben zurueck */
+.zl-punkt.erreicht .zl-kopf{
+  color:#f6faf3;border-color:var(--salbei-tief);background:var(--salbei-tief);
+  box-shadow:0 0 0 5px rgba(95,122,88,.13);
+}
+.zl-punkt.erreicht .zl-zeit{color:#4d6647}
 .zl-sym{width:56%;height:56%}
 .zl-zeit{
   font-variant-numeric:tabular-nums;font-weight:700;
   font-size:var(--t-s);color:var(--salbei-tief);letter-spacing:.06em;
 }
 .zl-titel{
-  font-size:var(--t-m);font-weight:700;margin:5px 0 0;line-height:1.25;
+  font-size:var(--t-m);font-weight:700;margin:2px 0 0;line-height:1.25;
   text-wrap:balance;
 }
 .zl-ort{margin:3px 0 0;font-size:var(--t-xs);color:var(--tinte-weich)}
 .zl-notiz{
   margin:6px 0 0;font-size:var(--t-xs);color:var(--tinte-zart);
-  border:0;padding:0;max-width:24ch;
+  border:0;padding:0;max-width:30ch;
 }
 
-/* Die durchgehende Linie verbindet die Symbole erst, wenn sie
-   auch wirklich in einer Reihe stehen. */
-.zeitleiste::before{display:none}
+/* Die Linie, an der die Stationen haengen. Der graue Strang steht
+   immer, der gruene waechst mit dem Lesefortschritt darueber. */
+.zeitleiste::before,
+.zeitleiste::after{
+  content:'';position:absolute;
+  left:calc(clamp(38px,10vw,46px) / 2 + 4px);width:1px;
+  top:clamp(19px,5vw,23px);bottom:clamp(19px,5vw,23px);
+}
+.zeitleiste::before{background:#cfdac8}
+.zeitleiste::after{
+  background:var(--salbei-tief);
+  transform:scaleY(var(--zl-fortschritt,0));transform-origin:top;
+  transition:transform .25s linear;
+}
 
 @media (min-width:700px){
   .zeitleiste{
     grid-template-columns:repeat(6,1fr);
-    gap:0 clamp(8px,1.6vw,16px);
+    gap:0 clamp(8px,1.6vw,16px);padding:0;
   }
-  .zeitleiste::before{
-    display:block;content:'';position:absolute;
-    left:8%;right:8%;top:calc(clamp(38px,10vw,46px) / 2);
-    height:1px;background:var(--salbei-tief);opacity:.3;
+  .zl-punkt{
+    grid-template-columns:none;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+  }
+  .zl-punkt > .zl-kopf,
+  .zl-punkt > .zl-zeit,
+  .zl-punkt > .zl-titel,
+  .zl-punkt > .zl-ort,
+  .zl-punkt > .zl-notiz{grid-column:auto;grid-row:auto}
+  .zl-kopf{margin-bottom:11px}
+  .zl-titel{margin-top:5px}
+  .zl-notiz{max-width:24ch}
+  /* Waagerecht laeuft die Linie quer statt senkrecht */
+  .zeitleiste::before,
+  .zeitleiste::after{
+    left:8%;right:8%;width:auto;
+    top:calc(clamp(38px,10vw,46px) / 2);bottom:auto;height:1px;
+  }
+  .zeitleiste::after{
     transform:scaleX(var(--zl-fortschritt,0));transform-origin:left;
-    transition:transform .2s linear;
   }
-  .zl-kopf{position:relative;z-index:1}
 }
 
 /* ---- Gut zu wissen ---- */
@@ -963,8 +1011,6 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   .doppel .sek.ort .ort-raster{grid-template-columns:1fr}
   .doppel .sek.ort .ort-bild{aspect-ratio:4/3}
   /* In der Spalte ist kein Platz fuer sechs Punkte nebeneinander */
-  .doppel .zeitleiste{grid-template-columns:repeat(3,1fr);gap:26px 14px}
-  .doppel .zeitleiste::before{display:none}
 }
 
 /* ---------- Geschenke: der Umschlag ----------
@@ -1028,3 +1074,257 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   #gb-lasche,.gabe-tipp,.gabe-buehne{transition:none}
   .gabe-fach{animation:none}
 }
+
+/* =========================================================
+   ZIERWERK — Kleinteile, die durch die Abschnitte treiben
+
+   Eine Form, viele Besetzungen: jeder Abschnitt bekommt eigene
+   Teilchen, eigene Bahnen, eigenes Tempo. Erzeugt werden sie erst,
+   wenn der Abschnitt in Sicht kommt, und stehen still, sobald er
+   wieder draussen ist - sonst laufen auf einem Telefon zweihundert
+   Animationen gleichzeitig, die niemand sieht.
+   ========================================================= */
+.zierfeld{
+  position:absolute;top:0;bottom:0;
+  left:calc(50% - 50vw);width:100vw;     /* ueber die schmale Textspalte hinaus */
+  overflow:hidden;pointer-events:none;z-index:0;
+}
+.zierfeld > *{position:absolute;will-change:transform,opacity}
+.sek.hat-zier, .sek-breit.hat-zier{position:relative}
+.sek.hat-zier > *:not(.zierfeld):not(.kulisse){position:relative;z-index:1}
+.zierfeld.ruht > *{animation-play-state:paused}
+
+/* --- Blütenblatt: taumelt, dreht sich um die eigene Achse --- */
+.z-bluete{
+  border-radius:64% 36% 58% 42% / 52% 44% 56% 48%;
+  animation:z-fall linear infinite;
+}
+/* --weg ist die Hoehe des Abschnitts, von karte.js gesetzt. Prozente
+   waeren hier falsch: transform:translateY(%) misst an der eigenen
+   Groesse, ein 14px-Schnipsel kaeme keine 20 Pixel weit. */
+@keyframes z-fall{
+  from{transform:translate3d(0,-70px,0) rotate(0deg) scale(1)}
+  to  {transform:translate3d(var(--drift,26px),var(--weg,900px),0) rotate(var(--dreh,300deg)) scale(.86)}
+}
+
+/* --- Konfetti: harte Kante, kippt um die Querachse wie Papier --- */
+.z-konfetti{
+  animation:z-fall linear infinite, z-kippen var(--kipp,1.1s) linear infinite;
+  box-shadow:0 1px 2px rgba(74,58,32,.14);
+}
+@keyframes z-kippen{
+  0%  {scale:1 1}
+  50% {scale:.24 1}
+  100%{scale:1 1}
+}
+
+/* --- Feder: sinkt langsam und pendelt seitlich aus --- */
+.z-feder{
+  background:no-repeat center/contain;
+  animation:z-sinken var(--dauer,16s) cubic-bezier(.42,0,.58,1) infinite,
+            z-pendeln var(--pendel,4.2s) ease-in-out infinite;
+}
+@keyframes z-sinken{
+  from{transform:translate3d(0,-90px,0);opacity:0}
+  8%  {opacity:var(--deck,.5)}
+  88% {opacity:var(--deck,.5)}
+  to  {transform:translate3d(0,var(--weg,900px),0);opacity:0}
+}
+@keyframes z-pendeln{
+  0%,100%{rotate:-16deg;margin-left:-14px}
+  50%    {rotate:14deg;margin-left:14px}
+}
+
+/* --- Funke: glimmt auf und wieder ab, ohne zu wandern --- */
+.z-funke{
+  border-radius:50%;
+  animation:z-glimmen var(--dauer,4s) ease-in-out infinite;
+}
+@keyframes z-glimmen{
+  0%,100%{opacity:0;transform:scale(.55)}
+  45%    {opacity:var(--deck,.85);transform:scale(1)}
+}
+
+/* --- Ballon: steigt, wiegt sich, zieht ein Band hinter sich --- */
+.z-ballon{
+  border-radius:49% 51% 46% 54% / 42% 42% 58% 58%;
+  /* Glanzlicht oben links gibt der Flaeche Volumen - ohne das ist ein
+     Ballon nur ein Fleck. */
+  background-image:radial-gradient(circle at 33% 26%,
+    rgba(255,255,255,.62) 0, rgba(255,255,255,.16) 34%, transparent 58%);
+  animation:z-steigen var(--dauer,22s) linear infinite,
+            z-wiegen var(--wiegen,5.5s) ease-in-out infinite;
+}
+/* Der Knoten, an dem das Band haengt */
+.z-ballon::before{
+  content:"";position:absolute;left:50%;top:96%;
+  width:5px;height:5px;translate:-50% 0;
+  background:currentColor;
+  clip-path:polygon(50% 100%, 0 0, 100% 0);
+}
+.z-ballon::after{        /* das Band */
+  content:"";position:absolute;left:50%;top:99%;
+  width:1px;height:190%;
+  background:linear-gradient(currentColor,transparent);
+  opacity:.5;transform-origin:top center;
+}
+@keyframes z-steigen{
+  from{transform:translate3d(0,var(--weg,900px),0)}
+  to  {transform:translate3d(var(--drift,-30px),-120px,0)}
+}
+@keyframes z-wiegen{
+  0%,100%{rotate:-7deg}
+  50%    {rotate:7deg}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .zierfeld{display:none}
+}
+
+/* =========================================================
+   EIGENE AUFTRITTE JE ABSCHNITT
+   Kein Abschnitt soll aussehen wie der davor.
+   ========================================================= */
+
+/* ---- Die Anrede ist ein Brief, kein Absatz ----
+   Bogen mit geprägtem Monogramm, Initiale als Zierbuchstabe, der
+   Text sitzt eingerückt darauf wie auf Büttenpapier. */
+.sek.anrede{
+  position:relative;
+  padding-top:clamp(46px,8vw,72px);
+}
+.brief{
+  position:relative;
+  padding:clamp(30px,6vw,44px) clamp(24px,5vw,38px) clamp(26px,5vw,38px);
+  background:
+    linear-gradient(#fffdf8,#faf4e8);
+  border:1px solid #e6dbc4;
+  box-shadow:0 22px 38px -28px rgba(74,58,32,.55);
+}
+/* Geprägtes Monogramm, das man eher ahnt als liest */
+.brief::before{
+  content:attr(data-monogramm);
+  position:absolute;right:clamp(10px,3vw,20px);bottom:clamp(4px,2vw,12px);
+  font-family:'Great Vibes',cursive;
+  font-size:clamp(64px,15vw,104px);line-height:1;
+  color:#8a744a;opacity:.07;pointer-events:none;
+  text-shadow:0 1px 0 rgba(255,255,255,.9);
+}
+/* Feine Goldlinie als Innenrand - die Kante eines guten Bogens */
+.brief::after{
+  content:"";position:absolute;inset:7px;
+  border:1px solid rgba(168,137,78,.28);pointer-events:none;
+}
+.brief > *{position:relative;z-index:1}
+/* Der erste Buchstabe wird zum Zierbuchstaben */
+.brief .fliess.gross::first-letter{
+  float:left;font-family:'Great Vibes',cursive;
+  font-size:3.2em;line-height:.78;
+  margin:.02em .16em .04em 0;color:var(--akzent);
+}
+.sek.anrede .signatur{margin-top:22px;text-align:right}
+
+/* ---- Gut zu wissen: Kärtchen statt Liste ----
+   Jedes liegt minimal anders da, wie von Hand hingelegt. */
+.wi-liste{display:grid;gap:clamp(14px,3vw,18px)}
+.wi-punkt{
+  display:block;position:relative;
+  padding:clamp(18px,4vw,24px) clamp(18px,4vw,24px) clamp(18px,4vw,22px);
+  background:linear-gradient(#fffdf8,#f8f2e5);
+  border:1px solid #e7dcc6;
+  box-shadow:0 12px 20px -16px rgba(74,58,32,.5);
+  transition:transform .55s var(--ease-out-quart), box-shadow .55s var(--ease-out-quart);
+}
+.wi-punkt:nth-child(odd) {rotate:-.5deg}
+.wi-punkt:nth-child(even){rotate:.45deg}
+.wi-punkt:hover{
+  rotate:0deg;transform:translateY(-3px);
+  box-shadow:0 18px 28px -18px rgba(74,58,32,.55);
+}
+/* Goldene Ecke oben rechts - wie ein umgeschlagenes Blatt */
+.wi-punkt::after{
+  content:"";position:absolute;top:0;right:0;
+  border-width:0 16px 16px 0;border-style:solid;
+  border-color:transparent #efe4cd transparent transparent;
+}
+.wi-sym{
+  width:26px;height:26px;color:var(--akzent);margin-bottom:10px;display:block;
+}
+
+/* ---- Die Familien stehen wie eingraviert ---- */
+.sek.familien .fam-liste{position:relative}
+.fam-zeile{position:relative}
+.sek.familien .sek-titel{text-align:center}
+.sek.familien .sek-titel::after{
+  content:"";display:block;width:52px;height:1px;
+  margin:16px auto 0;background:var(--rose-tief);opacity:.55;
+}
+
+/* ---- Die Lageskizze zeichnet sich selbst ----
+   Erst laufen die Wege, dann faellt die Nadel darauf. Eine Karte, die
+   entsteht, liest sich anders als eine, die schon fertig dasteht. */
+.kartenbild .k-weg{transition:stroke-dashoffset 1.1s var(--ease-out-quart)}
+.kartenbild .k-nadel{
+  opacity:0;transform:translateY(-26px);
+  transition:opacity .5s ease .9s, transform .85s var(--ease-out-expo) .9s;
+}
+.kartenbild .k-schatten{
+  opacity:0;transition:opacity .5s ease 1.35s;
+}
+.kartenbild.gezeichnet .k-nadel{opacity:1;transform:none}
+.kartenbild.gezeichnet .k-schatten{opacity:.3}
+@media (prefers-reduced-motion:reduce){
+  .kartenbild .k-nadel{opacity:1;transform:none}
+}
+
+/* ---- Das Gästealbum liegt als Stapel Sofortbilder da ----
+   Weisser Rand, unten breiter als oben - die Form kennt jeder, und
+   sie sagt sofort, worum es geht: Bilder von diesem Tag. */
+.upload-feld{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:clamp(30px,7vw,44px) 22px clamp(42px,9vw,56px);
+  border:0;cursor:pointer;position:relative;
+  color:var(--tinte-weich);text-align:center;
+  background:linear-gradient(#fff,#fdfbf6);
+  box-shadow:0 1px 0 #eee7d8, 0 16px 26px -18px rgba(74,58,32,.5);
+  rotate:-1.1deg;
+  transition:rotate .5s var(--ease-out-quart), transform .5s var(--ease-out-quart),
+             box-shadow .5s var(--ease-out-quart);
+}
+/* Zwei angedeutete Bilder darunter - der Stapel */
+.upload-feld::before,
+.upload-feld::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:#fffdf8;border:1px solid #efe7d6;
+}
+.upload-feld::before{rotate:2.4deg;translate:5px 3px}
+.upload-feld::after {rotate:-3.2deg;translate:-6px 5px}
+.upload-feld:hover{
+  rotate:0deg;transform:translateY(-4px);
+  box-shadow:0 1px 0 #eee7d8, 0 24px 34px -20px rgba(74,58,32,.55);
+}
+.upload-feld svg{width:26px;height:26px;color:var(--akzent)}
+.sek.erinnerung .upload{padding-block:6px}
+
+/* ---- Die Zusage ist eine Antwortkarte ----
+   Wie die Karte, die klassisch der Einladung beiliegt: eigener Bogen,
+   oben die Perforation, an der man sie heraustrennt. */
+.sek.rsvp .formular{
+  position:relative;margin-top:22px;
+  padding:clamp(30px,6vw,42px) clamp(20px,5vw,30px) clamp(24px,5vw,32px);
+  background:linear-gradient(#fffdf8,#faf5ea);
+  border:1px solid #e5dac3;
+  box-shadow:0 20px 34px -26px rgba(74,58,32,.5);
+}
+/* Die Perforationslinie samt Loechern */
+.sek.rsvp .formular::before{
+  content:"";position:absolute;left:14px;right:14px;top:15px;height:1px;
+  background:repeating-linear-gradient(90deg,#cfc0a2 0 5px,transparent 5px 11px);
+}
+.sek.rsvp .formular::after{
+  content:"R . S . V . P .";
+  position:absolute;left:50%;top:15px;translate:-50% -50%;
+  padding:0 12px;background:#fdfaf2;
+  font-size:.62rem;letter-spacing:.34em;color:var(--akzent);
+}
+.sek.rsvp{position:relative}
