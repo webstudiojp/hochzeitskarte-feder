@@ -202,12 +202,10 @@
     g.appendChild(bahn);
     const laenge = bahn.getTotalLength();
 
-    let gesamt = laenge;
-    pausen.forEach(x => { gesamt += x; });
-
     schreib = { zuege: zuege, mess: bahn, laenge: laenge, grenzen: grenzen,
-                spruenge: spruenge, pausen: pausen, gesamt: gesamt,
+                spruenge: spruenge, pausen: pausen,
                 ox: mitte, oy: oy, s: s };
+    profilBauen();
 
     heartEl.setAttribute('stroke-width', Math.max(3.4, s * 1.1).toFixed(2));
     if (!C.hero.herzZeigen) heartEl.style.display = 'none';
@@ -257,22 +255,38 @@
     return { x: schreib.ox + p.x * schreib.s, y: schreib.oy + p.y * schreib.s };
   }
 
-  function federAufPfad(l, hebung, weite, sichtbar) {
+  // Die Neigung wird nachgefuehrt, nicht gesetzt: eine Hand dreht die
+  // Feder traege mit. Ohne diese Traegheit ruckt sie in jeder Schleife.
+  let neigungIst = FEDER_NEIGUNG;
+
+  function federAufPfad(l, hebung, weite, sichtbar, dt) {
     const hier = amPfad(l);
-    const dort = amPfad(Math.min(schreib.laenge, l + 1.6));
-    const winkel = Math.atan2(dort.y - hier.y, dort.x - hier.x) * 180 / Math.PI;
+    const dort = amPfad(Math.min(schreib.laenge, l + 2.2));
+    const roh = Math.atan2(dort.y - hier.y, dort.x - hier.x) * 180 / Math.PI;
 
     // Beim Absetzen loest sich die Spitze vom Papier: sie steigt, kippt
     // etwas auf und kommt der Kamera minimal naeher.
     const hoch = hebung * Math.min(58, 12 + weite * schreib.s * 0.5);
     const gr   = 1 + hebung * 0.05;
-    // Eine Hand ist ruhig, aber nicht starr
-    const zittern = Math.sin(l * 0.9) * 0.5 + Math.sin(l * 2.7) * 0.22;
-    const neigung = FEDER_NEIGUNG + winkel * 0.13 + zittern - hebung * 6;
+
+    // Eine Hand ist ruhig, aber nicht starr - das Wiegen laeuft in der
+    // Zeit, nicht im Weg. Am Weg gekoppelt wuerde es mit dem Schreibtempo
+    // mitflattern.
+    const wiegen = Math.sin(performance.now() / 900) * 0.5
+                 + Math.sin(performance.now() / 1450) * 0.3;
+
+    let ziel = FEDER_NEIGUNG + roh * 0.1 + wiegen - hebung * 6;
+    // Kuerzesten Weg nehmen: atan2 springt bei plus/minus 180 Grad um
+    // volle 360 - ungebremst reisst das die Feder jedes Mal herum.
+    let ab = ziel - neigungIst;
+    while (ab >  180) ab -= 360;
+    while (ab < -180) ab += 360;
+    const traegheit = 1 - Math.pow(0.0016, Math.min(0.05, (dt || 16) / 1000));
+    neigungIst += ab * traegheit;
 
     federEl.setAttribute('transform',
       'translate(' + hier.x.toFixed(2) + ',' + (hier.y - hoch).toFixed(2) + ') ' +
-      'rotate(' + neigung.toFixed(2) + ') scale(' + gr.toFixed(4) + ')');
+      'rotate(' + neigungIst.toFixed(2) + ') scale(' + gr.toFixed(4) + ')');
     federEl.setAttribute('opacity', sichtbar.toFixed(2));
   }
 
@@ -291,6 +305,60 @@
   }
 
   /* ---------------------------------------------------------
+     Wie schnell die Hand an welcher Stelle ist
+
+     Eine Hand schreibt nicht mit gleichbleibendem Tempo. Sie wird in
+     engen Bogen langsamer und zieht auf geraden Strecken an - in der
+     Bewegungsforschung heisst das Zwei-Drittel-Potenzgesetz: die
+     Geschwindigkeit waechst mit der dritten Wurzel des Kurvenradius.
+     Genau das fehlte bisher. Mit festem Tempo entlang der Linie zuckt
+     die Feder durch jede Schleife, und das sieht hektisch aus.
+
+     Hier wird der Weg einmal abgetastet, an jeder Stelle die Kruemmung
+     bestimmt und daraus eine Tabelle Zeit -> Weg gebaut. Danach kostet
+     die Abfrage im Bild nur noch eine Suche.
+     --------------------------------------------------------- */
+  const ABTASTUNG = 1.1;          // Schrittweite in Pfadeinheiten
+
+  function profilBauen() {
+    const L = schreib.laenge, g = schreib.grenzen;
+    const zeit = [], weg = [], hub = [], weit = [];
+    const punkt = l => schreib.mess.getPointAtLength(Math.max(0, Math.min(L, l)));
+
+    let t = 0, zug = 0;
+    for (let l = 0; l <= L; l += ABTASTUNG) {
+      // Kruemmung aus drei benachbarten Punkten
+      const a = punkt(l - ABTASTUNG), b = punkt(l), c = punkt(l + ABTASTUNG);
+      let dw = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(b.y - a.y, b.x - a.x);
+      while (dw >  Math.PI) dw -= 2 * Math.PI;
+      while (dw < -Math.PI) dw += 2 * Math.PI;
+      const kruemmung = Math.abs(dw) / ABTASTUNG;
+      // v ~ r^(1/3); der Nenner deckelt, damit die Feder nie stehenbleibt
+      const v = Math.pow(1 / (1 + kruemmung * 34), 1 / 3);
+
+      zeit.push(t); weg.push(l); hub.push(0); weit.push(0);
+      t += ABTASTUNG / Math.max(0.22, v);
+
+      // Am Ende eines Zuges hebt die Feder ab und setzt neu an
+      while (zug < g.length - 1 && l >= g[zug]) {
+        const dauer = schreib.pausen[zug] * 0.9;
+        const w = schreib.spruenge[zug];
+        for (let k = 1; k <= 5; k++) {
+          zeit.push(t + dauer * k / 5);
+          weg.push(g[zug]);
+          hub.push(Math.sin((k / 5) * Math.PI));
+          weit.push(w);
+        }
+        t += dauer;
+        zug++;
+      }
+    }
+    zeit.push(t); weg.push(L); hub.push(0); weit.push(0);
+
+    schreib.profil = { zeit: zeit, weg: weg, hub: hub, weit: weit, dauer: t, zeiger: 0 };
+  }
+
+  /* ---------------------------------------------------------
      5. Der Ablauf
 
      Zwischen zwei Zuegen haelt die Feder an und hebt ab - und
@@ -299,18 +367,21 @@
      deshalb sichtbar laenger als der Punkt auf dem i.
      --------------------------------------------------------- */
   function schreibPunkt(p) {
-    const g = schreib.grenzen, n = g.length;
-    let v = p * schreib.gesamt;
-    for (let i = 0; i < n - 1; i++) {
-      if (v <= g[i]) return { l: v, hebung: 0, weite: 0 };
-      const pause = schreib.pausen[i];
-      v -= pause;
-      if (v < g[i]) {
-        const a = (g[i] - v) / pause;                 // 1 am Anfang, 0 am Ende
-        return { l: g[i], hebung: Math.sin((1 - a) * Math.PI), weite: schreib.spruenge[i] };
-      }
-    }
-    return { l: Math.min(v, schreib.laenge), hebung: 0, weite: 0 };
+    const pr = schreib.profil;
+    const t = p * pr.dauer;
+    // Die Zeit laeuft vorwaerts, also weiter suchen statt von vorn
+    let i = pr.zeiger;
+    if (pr.zeit[i] > t) i = 0;
+    while (i < pr.zeit.length - 1 && pr.zeit[i + 1] <= t) i++;
+    pr.zeiger = i;
+
+    const t0 = pr.zeit[i], t1 = pr.zeit[i + 1];
+    const f = t1 > t0 ? (t - t0) / (t1 - t0) : 0;
+    return {
+      l:      pr.weg[i]  + (pr.weg[i + 1]  - pr.weg[i])  * f,
+      hebung: pr.hub[i]  + (pr.hub[i + 1]  - pr.hub[i])  * f,
+      weite:  pr.weit[i],
+    };
   }
 
   function endzustand() {
@@ -358,7 +429,7 @@
 
     const t0 = performance.now();
     const ANSCHWEBEN = T(1150);
-    const SCHREIBEN  = T(6200);
+    const SCHREIBEN  = T(7600);
     const ABHEBEN    = T(900);
     const HERZ       = T(700);
     const SIEGEL     = T(900);
@@ -369,6 +440,7 @@
     const start = amPfad(0);
     const ende  = amPfad(schreib.laenge);
 
+    let zuletzt = t0;
     function frame(now) {
       if (abbruch) return;
       const t = now - t0;
@@ -383,18 +455,21 @@
           'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') ' +
           'rotate(' + (-38 + 14 * p).toFixed(1) + ') scale(' + (1.1 - 0.1 * p).toFixed(3) + ')');
         federEl.setAttribute('opacity', Math.min(1, p * 1.7).toFixed(2));
+        neigungIst = -38 + 14 * p;
       } else if (t < s2) {
         const p = (t - s1) / SCHREIBEN;
         const z = schreibPunkt(p);
         tinteSetzen(z.l);
-        federAufPfad(z.l, z.hebung, z.weite, 1);
+        federAufPfad(z.l, z.hebung, z.weite, 1, now - zuletzt);
       } else if (t < s3) {
         // Abheben vom letzten Buchstaben weg, nach rechts oben aus dem Bild
         const p = easeIO((t - s2) / ABHEBEN);
         tinteSetzen(schreib.laenge);
         federEl.setAttribute('transform',
           'translate(' + (ende.x + 190 * p).toFixed(1) + ',' + (ende.y - 210 * p).toFixed(1) + ') ' +
-          'rotate(' + (FEDER_NEIGUNG - 18 * p).toFixed(1) + ') scale(' + (1 + 0.09 * p).toFixed(3) + ')');
+          // Von der zuletzt geschriebenen Neigung ausgehen, sonst ruckt
+          // die Feder im Moment des Abhebens noch einmal.
+          'rotate(' + (neigungIst - 18 * p).toFixed(1) + ') scale(' + (1 + 0.09 * p).toFixed(3) + ')');
         federEl.setAttribute('opacity', (1 - p).toFixed(2));
       } else if (t < s4) {
         federEl.setAttribute('opacity', 0);
@@ -413,6 +488,7 @@
         endzustand();
         return;
       }
+      zuletzt = now;
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);

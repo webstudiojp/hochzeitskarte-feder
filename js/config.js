@@ -11,7 +11,7 @@ window.HOCHZEIT = {
 
   // Wird von bin/veroeffentlichen.sh gesetzt und an alle Bilder gehaengt,
   // damit Browser nach einer Aenderung nicht die alte Fassung zeigen.
-  version: '202608211411',
+  version: '202608211430',
 
   /* ---------- Sprachen ---------- */
   standardsprache: 'de',
