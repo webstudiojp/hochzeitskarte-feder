@@ -1036,43 +1036,51 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   /* In der Spalte ist kein Platz fuer sechs Punkte nebeneinander */
 }
 
-/* ---------- Geschenke: der Umschlag ----------
-   Dieselbe Form wie der Umschlag, mit dem die Einladung beginnt - nur
-   klein und in den Farben der Karte. Beim Antippen klappt die Lasche
-   auf, ein Blatt schiebt sich heraus und darunter erscheint die
-   Bankverbindung. */
+/* ---------- Geschenke: die Schachtel ----------
+   Eine raeumliche Schachtel statt einer flachen Flaeche: Vorderseite
+   und rechte Wange geben die Tiefe, der Deckel liegt darauf. Beim
+   Antippen hebt er ab, kippt leicht weg und gibt die Schachtel frei. */
 .gabe{margin-top:26px}
 .gabe-knopf{
-  display:flex;flex-direction:column;align-items:center;gap:15px;
+  display:flex;flex-direction:column;align-items:center;gap:13px;
   margin:0 auto;padding:8px 18px 2px;border:0;background:none;cursor:pointer;
   font:inherit;color:inherit;
 }
-.gabe-buehne{position:relative;display:block;width:min(62vw,208px)}
-.gabe-svg{
-  position:relative;z-index:2;width:100%;height:auto;display:block;
-  filter:drop-shadow(0 14px 22px rgba(74,58,32,.22));
-  overflow:visible;
+.gabe-buehne{
+  position:relative;display:block;width:min(58vw,196px);
+  transition:transform .4s var(--ease-out-quart);
 }
-.gb-korpus     {fill:#eadbbd}
-.gb-front      {fill:#e2ceaa}
-.gb-kante      {fill:none;stroke:#d0b891;stroke-width:1.4}
-.gb-laschenform{fill:#f4e9d4;stroke:#d5bf99;stroke-width:1}
-.gb-ring       {fill:none;stroke:var(--akzent);stroke-width:1.8;opacity:.55}
-.gb-herz       {fill:var(--akzent);opacity:.8}
-#gb-lasche{
-  transform-origin:100px 24px;
-  transition:transform .85s cubic-bezier(.5,0,.2,1);
-}
+.gabe-svg{width:100%;height:auto;display:block;overflow:visible}
+
+/* Papier und Pappe */
+.gb-front       {fill:#e6d2ad}
+.gb-wange       {fill:#d6bd91}
+.gb-oeffnung    {fill:#d9c096}
+.gb-innen       {fill:#7d6242}
+.gb-deckelseite {fill:#efe0c4}
+.gb-deckelwange {fill:#ddc7a2}
+.gb-deckeloben  {fill:#f7ecd8}
+/* Das Band laeuft ueber alle Flaechen weiter */
+.gb-band-v ,.gb-band-d {fill:#b5623c}
+.gb-band-w ,.gb-band-do{fill:#9e4f31}
+.gb-schleife path  {fill:#c4703f}
+.gb-schleife ellipse{fill:#9e4f31}
+.gb-schatten{fill:#8a7550;opacity:.22}
+
 .gabe-tipp{
   font-size:var(--t-xs);letter-spacing:.22em;text-transform:uppercase;
   color:var(--akzent);transition:opacity .4s ease,transform .4s ease;
 }
-.gabe-knopf:hover .gabe-buehne{transform:translateY(-4px)}
-.gabe-buehne{transition:transform .35s var(--ease-out-quart)}
 
-/* --- geoeffnet --- */
-.gabe.auf #gb-lasche  {transform:rotateX(180deg) translateY(-2px)}
-.gabe.auf .gabe-tipp  {opacity:0;transform:translateY(-4px)}
+/* Der Deckel: hebt, kippt, schwebt zur Seite */
+#gb-deckel{
+  transform-origin:60% 76%;
+  transition:transform .82s var(--ease-out-expo);
+}
+.gabe.auf #gb-deckel{transform:translate(16px,-46px) rotate(-13deg)}
+.gabe.auf .gb-schatten{opacity:.3}
+.gabe.auf .gabe-tipp{opacity:0;transform:translateY(-4px)}
+.gabe-knopf:hover .gabe-buehne{transform:translateY(-4px)}
 
 .gabe-fach{
   max-width:30rem;margin:-6px auto 0;padding:4px 20px 16px;
@@ -1094,7 +1102,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 }
 
 @media (prefers-reduced-motion:reduce){
-  #gb-lasche,.gabe-tipp,.gabe-buehne{transition:none}
+  #gb-deckel,.gabe-tipp,.gabe-buehne{transition:none}
   .gabe-fach{animation:none}
 }
 

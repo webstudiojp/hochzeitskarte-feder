@@ -315,8 +315,7 @@
     setzen('d-jahr', d.getFullYear());
     setzen('d-wochentag', S.wochentage[d.getDay()]);
     setzen('merken-text', S.merken);
-    setzen('btn-kalender-text', S.kalenderApple);
-    setzen('btn-google-cal-text', S.kalenderGoogle);
+    setzen('btn-kalender-text', S.kalenderKnopf);
 
     // Anrede
     setzen('a-text', S.anredeText);
@@ -473,10 +472,6 @@
     const ziel = encodeURIComponent(adresse);
     $('btn-google').href = 'https://www.google.com/maps/dir/?api=1&destination=' + ziel;
     $('btn-apple').href  = 'https://maps.apple.com/?daddr=' + ziel + '&dirflg=d';
-    $('btn-google-cal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-      + '&text=' + encodeURIComponent(S.seitentitel(C.namen).split(' — ')[0] + ' · ' + S.heroZeile)
-      + '&dates=' + C.beginnISO.replace(/[-:]/g, '') + '/' + C.endeISO.replace(/[-:]/g, '')
-      + '&location=' + ziel;
 
     // Sprachumschalter: aktive Flagge farbig, die andere zurueckgenommen
     document.querySelectorAll('.flagge').forEach(f => {
@@ -524,34 +519,66 @@
   }
 
   /* =========================================================
-     6. Kalenderdatei — komplett im Browser erzeugt
+     6. Kalenderdatei - ein Knopf fuer alle Geraete
+
+     Die .ics-Datei ist das einzige Kalenderformat, das iPhone,
+     Android und Rechner gleichermassen verstehen. Sie entsteht hier
+     im Browser; nichts wird an einen Dienst geschickt.
+
+     Nur der Weg zur Datei unterscheidet sich: Safari auf dem iPhone
+     verschluckt Downloads mit download-Attribut und legt sie
+     bestenfalls in "Dateien" ab. Ohne das Attribut oeffnet dieselbe
+     Datei direkt den Kalender. Auf allen anderen Geraeten ist es
+     umgekehrt - dort braucht es den Download.
      ========================================================= */
-  const icsZeit = iso => iso.replace(/[-:]/g, '').replace(/\.\d+/, '');
-  $('btn-kalender').addEventListener('click', () => {
+  /* In UTC schreiben (Z am Ende). Damit steht der Termin fuer jeden Gast
+     zur richtigen Ortszeit im Kalender, egal wo er sich befindet. */
+  const icsZeit = iso => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+
+  function kalenderDatei() {
     const adresse = S.ortName + ', ' + C.ort.strasse + ', ' + C.ort.plz + ' ' + C.ort.stadt;
-    const ics = [
+    const falte = z => String(z).replace(/([,;\\])/g, '\\$1');
+    return [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//JP Webstudio//Hochzeitskarte//DE',
-      'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
+      'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
       'UID:' + C.datumISO + '-' + C.braut.toLowerCase() + '-' + C.braeutigam.toLowerCase() + '@einladung',
-      'DTSTAMP:' + icsZeit(new Date().toISOString()).replace(/\.\d+Z$/, 'Z'),
+      'DTSTAMP:' + icsZeit(new Date().toISOString()),
       'DTSTART:' + icsZeit(C.beginnISO),
       'DTEND:'   + icsZeit(C.endeISO),
-      'SUMMARY:' + C.namen + ' · ' + S.heroZeile,
-      'LOCATION:' + adresse.replace(/,/g, '\\,'),
+      'SUMMARY:' + falte(C.namen + ' \u00b7 ' + S.heroZeile),
+      'LOCATION:' + falte(adresse),
+      'DESCRIPTION:' + falte(S.kalenderNotiz(location.href.split('#')[0])),
+      'URL:' + location.href.split('#')[0],
+      // Eine Erinnerung am Vortag - sonst steht der Termin nur da
+      'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY',
+      'DESCRIPTION:' + falte(C.namen), 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR',
     ].join('\r\n');
-    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  }
+
+  $('btn-kalender').addEventListener('click', () => {
+    const blob = new Blob([kalenderDatei()], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const apple = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const a = document.createElement('a');
     a.href = url;
-    a.download = C.braeutigam + '-' + C.braut + '.ics';
+    if (!apple) a.download = C.braeutigam + '-' + C.braut + '.ics';
+    else a.target = '_blank';
+    a.rel = 'noopener';
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+
+    const t = $('btn-kalender-text');
+    const vorher = t.textContent;
+    t.textContent = S.kalenderFertig;
+    setTimeout(() => { t.textContent = vorher; }, 2600);
   });
 
   /* =========================================================
-     7. Der Geschenkumschlag und die Bankverbindung darin
+     7. Die Geschenkschachtel und die Bankverbindung darin
      ========================================================= */
-  (function geschenkumschlag() {
+  (function geschenkschachtel() {
     const knopf = $('btn-gabe');
     const fach  = $('gabe-fach');
     if (!knopf || !fach) return;
@@ -560,7 +587,7 @@
       const auf = huelle.classList.toggle('auf');
       knopf.setAttribute('aria-expanded', auf ? 'true' : 'false');
       if (auf) {
-        // Erst wenn der Deckel offen ist, kommt die Karte zum Vorschein
+        // Erst wenn der Deckel abgehoben hat, kommt die Karte zum Vorschein
         setTimeout(() => { fach.hidden = false; }, 340);
       } else {
         fach.hidden = true;

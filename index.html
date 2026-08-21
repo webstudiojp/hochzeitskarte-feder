@@ -34,8 +34,8 @@ if (!location.hash) {
   addEventListener('load', () => { if (!location.hash) window.scrollTo(0, 0); });
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=202608211354">
-<link rel="stylesheet" href="css/karte.css?v=202608211354">
+<link rel="stylesheet" href="css/style.css?v=202608211411">
+<link rel="stylesheet" href="css/karte.css?v=202608211411">
 </head>
 <body>
 
@@ -117,7 +117,7 @@ if (!location.hash) {
   <button id="skip" class="skip" hidden>Überspringen</button>
 
   <div class="hero-grund" aria-hidden="true">
-    <img src="assets/img/schreibtisch.webp?v=202608211354" alt="" decoding="async">
+    <img src="assets/img/schreibtisch.webp?v=202608211411" alt="" decoding="async">
   </div>
 
   <svg id="scene" class="scene" viewBox="0 0 1000 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -148,7 +148,7 @@ if (!location.hash) {
     </defs>
 
     <!-- Der Schreibtisch -->
-    <image href="assets/img/schreibtisch.webp?v=202608211354" x="0" y="0" width="1000" height="1800"
+    <image href="assets/img/schreibtisch.webp?v=202608211411" x="0" y="0" width="1000" height="1800"
            preserveAspectRatio="xMidYMid slice"/>
 
     <!-- Kerzenschein von links, pulsiert leicht -->
@@ -177,16 +177,16 @@ if (!location.hash) {
     <!-- Das Siegel wird zum Schluss aufgedrueckt -->
     <g id="siegel-gruppe" opacity="0">
       <ellipse cx="508" cy="1196" rx="58" ry="54" fill="#150d06" opacity=".5" filter="url(#weich)"/>
-      <image href="assets/img/siegel.webp?v=202608211354" x="440" y="1198" width="128" height="126"/>
+      <image href="assets/img/siegel.webp?v=202608211411" x="440" y="1198" width="128" height="126"/>
     </g>
 
     <!-- Die Feder -->
     <g id="feder" opacity="0">
       <g id="feder-schatten" opacity=".38">
-        <image href="assets/img/feder.webp?v=202608211354" x="-52" y="-330" width="200" height="382"
+        <image href="assets/img/feder.webp?v=202608211411" x="-52" y="-330" width="200" height="382"
                filter="url(#weich)" style="filter:url(#weich)"/>
       </g>
-      <image href="assets/img/feder.webp?v=202608211354" x="-64" y="-352" width="200" height="382"/>
+      <image href="assets/img/feder.webp?v=202608211411" x="-64" y="-352" width="200" height="382"/>
     </g>
 
     <rect width="1000" height="1800" fill="url(#vignette)" style="pointer-events:none"/>
@@ -232,20 +232,19 @@ if (!location.hash) {
     <p class="datum-wochentag rv" data-rv="5" id="d-wochentag"></p>
 
     <p class="merken rv" data-rv="6" id="merken-text">Erinnerung hinzufügen</p>
+    <!-- Ein Knopf fuer alle Geraete: die Karte erzeugt eine
+         Kalenderdatei, die iPhone, Android und Rechner gleichermassen
+         verstehen. Kein Umweg ueber Google, kein Konto noetig. -->
     <div class="kalender-knoepfe rv" data-rv="7">
-      <button class="knopf knopf-linie" id="btn-kalender" type="button">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="knopf-icon"><path d="M16.4 12.9c0-2 1.6-3 1.7-3.1-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 6 1 8 .7 1 1.5 2.1 2.5 2 1-.1 1.4-.6 2.6-.6s1.5.6 2.6.6c1.1 0 1.8-1 2.4-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3zM14.5 6.9c.5-.7.9-1.6.8-2.6-.8 0-1.8.6-2.4 1.2-.5.6-1 1.6-.8 2.5.9.1 1.8-.4 2.4-1.1z" fill="currentColor"/></svg>
-        <span id="btn-kalender-text">iPhone — Apple Kalender</span>
+      <button class="knopf knopf-linie knopf-kalender" id="btn-kalender" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="knopf-icon"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.5 14.4l1.9 1.9 3.4-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="btn-kalender-text">Termin speichern</span>
       </button>
-      <a class="knopf knopf-linie" id="btn-google-cal" href="#" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="knopf-icon"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        <span id="btn-google-cal-text">Android — Google Kalender</span>
-      </a>
     </div>
   </section>
   <!-- ---------- Ein Bild, das die Seite einmal aufreisst ---------- -->
   <section class="grossbild" id="sek-zitat" aria-label="Bildmoment">
-    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=202608211354" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=202608211411" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="gb-gross rv" data-rv="1" id="zitat-gross"></p>
@@ -254,7 +253,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Countdown (Kontrastmoment, volle Breite) ---------- -->
   <section class="sek-breit countdown" id="sek-countdown" aria-label="Countdown">
-    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=202608211354" alt="" loading="lazy" decoding="async">
+    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=202608211411" alt="" loading="lazy" decoding="async">
     <span class="cd-schleier"></span>
     <p class="ueberzeile hell" id="cd-ueber">Noch</p>
     <div class="cd-reihe" id="cd-reihe" role="timer" aria-live="off">
@@ -290,7 +289,7 @@ if (!location.hash) {
   <section class="sek ort" id="sek-ort">
     <h2 class="sek-titel rv" data-rv="1" id="ort-titel">Wo</h2>
     <figure class="ort-bild rv" data-rv="2">
-      <img data-px="6" src="assets/img/g3-bogen.webp?v=202608211354" id="ort-foto" alt="" loading="lazy" decoding="async">
+      <img data-px="6" src="assets/img/g3-bogen.webp?v=202608211411" id="ort-foto" alt="" loading="lazy" decoding="async">
     </figure>
     <div class="ort-raster">
       <div>
@@ -347,27 +346,45 @@ if (!location.hash) {
   <section class="sek geschenk" id="sek-geschenk">
     <h2 class="sek-titel rv" data-rv="1" id="geschenk-titel">Geschenke</h2>
     <p class="fliess rv" data-rv="2" id="g-text"></p>
-    <!-- Die Bankverbindung steckt in einem Umschlag - derselbe, mit dem
-         die Einladung beginnt. Wer nichts schenken will, sieht die
-         Kontonummer gar nicht erst; das nimmt der Bitte die Aufdringlichkeit. -->
+    <!-- Die Bankverbindung liegt in einer Schachtel. Wer nichts schenken
+         will, sieht die Kontonummer gar nicht erst - das nimmt der Bitte
+         die Aufdringlichkeit und macht aus einer Nummer einen Moment. -->
     <div class="gabe rv" data-rv="3">
       <button class="gabe-knopf" id="btn-gabe" type="button"
               aria-expanded="false" aria-controls="gabe-fach">
         <span class="gabe-buehne" aria-hidden="true">
-          <svg viewBox="0 0 200 140" class="gabe-svg">
-            <rect x="4" y="24" width="192" height="112" rx="6" class="gb-korpus"/>
-            <path d="M4 30 L100 96 L196 30" class="gb-kante"/>
-            <path d="M4 136 L100 74 L196 136 Z" class="gb-front"/>
-            <path d="M4 136 L4 30 L100 92 L196 30 L196 136 Z" class="gb-front"/>
-            <!-- Siegel und Herz sitzen auf der Lasche, also klappen sie mit auf -->
-            <g class="gb-lasche" id="gb-lasche">
-              <path d="M4 30 L100 96 L196 30 L196 24 L4 24 Z" class="gb-laschenform"/>
-              <path class="gb-ring" d="M100 66 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0"/>
-              <path class="gb-herz" d="M100 61 c-3.4-5-11-3.4-11 1.7 0 5 6.8 8.5 11 12.8 4.2-4.3 11-7.8 11-12.8 0-5.1-7.6-6.7-11-1.7z"/>
+          <svg viewBox="0 0 200 176" class="gabe-svg">
+            <!-- Schatten auf dem Tisch -->
+            <ellipse class="gb-schatten" cx="100" cy="163" rx="62" ry="9"/>
+
+            <!-- Der Kasten: Vorderseite und rechte Wange geben die Tiefe -->
+            <g class="gb-kasten">
+              <path class="gb-front"  d="M36 92 H150 V156 H36 Z"/>
+              <path class="gb-wange"  d="M150 92 L176 76 V140 L150 156 Z"/>
+              <!-- Die offene Oberseite. Liegt unter dem Deckel und wird
+                   erst sichtbar, wenn er abgehoben hat. -->
+              <path class="gb-oeffnung" d="M36 92 L62 76 H176 L150 92 Z"/>
+              <path class="gb-innen"    d="M44 89 L67 75 H166 L145 89 Z"/>
+              <path class="gb-band-v" d="M85 92 H101 V156 H85 Z"/>
+              <path class="gb-band-w" d="M101 92 L127 76 V140 L101 156 Z"/>
+            </g>
+
+            <!-- Der Deckel hebt beim Antippen ab -->
+            <g class="gb-deckel" id="gb-deckel">
+              <path class="gb-deckelseite" d="M30 78 H156 V100 H30 Z"/>
+              <path class="gb-deckelwange" d="M156 78 L182 62 V84 L156 100 Z"/>
+              <path class="gb-deckeloben"  d="M30 78 L56 62 H182 L156 78 Z"/>
+              <path class="gb-band-d"  d="M83 78 H99 V100 H83 Z"/>
+              <path class="gb-band-do" d="M83 78 L109 62 H125 L99 78 Z"/>
+              <g class="gb-schleife">
+                <path d="M104 62 C88 60 76 50 84 44 C92 39 100 52 104 62 Z"/>
+                <path d="M104 62 C120 60 132 50 124 44 C116 39 108 52 104 62 Z"/>
+                <ellipse cx="104" cy="61" rx="6.5" ry="4.6"/>
+              </g>
             </g>
           </svg>
         </span>
-        <span class="gabe-tipp" id="gabe-tipp">Umschlag öffnen</span>
+        <span class="gabe-tipp" id="gabe-tipp">Geschenk öffnen</span>
       </button>
 
       <div class="gabe-fach" id="gabe-fach" hidden>
@@ -429,7 +446,7 @@ if (!location.hash) {
   </section>
   <!-- ---------- Abschied ---------- -->
   <section class="grossbild abschied" id="sek-abschied" aria-label="Abschied">
-    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=202608211354" alt="" loading="lazy" decoding="async">
+    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=202608211411" alt="" loading="lazy" decoding="async">
     <span class="gb-schleier"></span>
     <div class="gb-text">
       <p class="ab-gross rv" data-rv="1" id="abschied-gross"></p>
@@ -462,9 +479,9 @@ if (!location.hash) {
   <p class="lupe-text" id="lupe-text"></p>
 </div>
 
-<script src="js/config.js?v=202608211354"></script>
-<script src="js/schreibschrift.js?v=202608211354"></script>
-<script src="js/hero.js?v=202608211354"></script>
-<script src="js/karte.js?v=202608211354"></script>
+<script src="js/config.js?v=202608211411"></script>
+<script src="js/schreibschrift.js?v=202608211411"></script>
+<script src="js/hero.js?v=202608211411"></script>
+<script src="js/karte.js?v=202608211411"></script>
 </body>
 </html>

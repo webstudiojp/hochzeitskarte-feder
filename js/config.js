@@ -11,7 +11,7 @@ window.HOCHZEIT = {
 
   // Wird von bin/veroeffentlichen.sh gesetzt und an alle Bilder gehaengt,
   // damit Browser nach einer Aenderung nicht die alte Fassung zeigen.
-  version: '202608211354',
+  version: '202608211411',
 
   /* ---------- Sprachen ---------- */
   standardsprache: 'de',
@@ -23,8 +23,11 @@ window.HOCHZEIT = {
   namen:        'Furkan & Dilara',
   datumKurz:    '01.01.2027',
   datumISO:     '2027-01-01',
-  beginnISO:    '2027-01-01T14:30:00',
-  endeISO:      '2027-01-02T02:00:00',
+  /* Mit Zeitzonenversatz, sonst rechnen Countdown und Kalendereintrag in
+     der Zeit des Betrachters: ein Gast in Istanbul saehe beides zwei
+     Stunden daneben. +01:00 = Winterzeit, +02:00 = Sommerzeit. */
+  beginnISO:    '2027-01-01T14:30:00+01:00',
+  endeISO:      '2027-01-02T02:00:00+01:00',
 
   /* ---------- Hero-Animation ---------- */
   hero: {
@@ -113,8 +116,9 @@ window.HOCHZEIT = {
 
       kopfUeberzeile: 'Die Einladung',
       merken:         'Erinnerung hinzufügen',
-      kalenderApple:  'iPhone — Apple Kalender',
-      kalenderGoogle: 'Android — Google Kalender',
+      kalenderKnopf: 'Termin speichern',
+      kalenderFertig: 'Gespeichert',
+      kalenderNotiz: adr => 'Wir freuen uns auf euch. Alle Angaben zum Tag: ' + adr,
 
       anredeText: 'Am ersten Tag des neuen Jahres geben wir uns das Ja-Wort. '
                 + 'Wir würden uns freuen, wenn ihr dabei seid – zur Trauung, '
@@ -190,7 +194,7 @@ window.HOCHZEIT = {
       geschenkTitel: 'Geschenke',
       geschenkText: 'Ihr müsst nichts mitbringen. Wer uns trotzdem etwas schenken möchte: '
                   + 'Wir sparen auf die Hochzeitsreise nach Kappadokien.',
-      gabeOeffnen: 'Umschlag öffnen',
+      gabeOeffnen: 'Geschenk öffnen',
       kopieren: 'Kopieren', kopiert: 'Kopiert', kopierenHand: 'Bitte von Hand kopieren',
 
       rsvpTitel: 'Sagt ihr uns Bescheid?',
@@ -214,7 +218,7 @@ window.HOCHZEIT = {
 
       verantwortlich: 'Verantwortlich für den Inhalt: Dilara Sarıca und Furkan Zarga · hallo@dilara-und-furkan.de',
       datenschutz: 'Diese Seite setzt keine Cookies und lädt weder Schriften noch Karten von fremden Servern. '
-                 + 'Der Google-Kalender-Knopf öffnet erst nach eurem Klick eine Seite von Google.',
+                 + 'Der Termin wird auf eurem Gerät erzeugt, die Kartenknöpfe öffnen erst nach eurem Klick eine Karten-App.',
       demoHinweis: 'Demo-Karte von JP Webstudio, gehostet auf GitHub Pages. Paar, Termin und Bankverbindung sind erfunden.',
       seitentitel: namen => namen + ' — Wir heiraten',
     },
@@ -234,8 +238,9 @@ window.HOCHZEIT = {
 
       kopfUeberzeile: 'Davetiye',
       merken:         'Hatırlatıcı ekle',
-      kalenderApple:  'iPhone — Apple Takvim',
-      kalenderGoogle: 'Android — Google Takvim',
+      kalenderKnopf: 'Takvime ekle',
+      kalenderFertig: 'Eklendi',
+      kalenderNotiz: adr => 'Sizi aramızda görmek için sabırsızlanıyoruz. Günün tüm ayrıntıları: ' + adr,
 
       anredeText: 'Yeni yılın ilk gününde hayatımızı birleştiriyoruz. '
                 + 'Bu özel günümüzde sizi de aramızda görmekten mutluluk duyarız – '
@@ -311,7 +316,7 @@ window.HOCHZEIT = {
       geschenkTitel: 'Hediye',
       geschenkText: 'Varlığınız bizim için en değerli hediye. Yine de bir şey vermek isteyenler için: '
                   + 'Kapadokya’ya balayı için biriktiriyoruz.',
-      gabeOeffnen: 'Zarfı aç',
+      gabeOeffnen: 'Hediyeyi aç',
       kopieren: 'Kopyala', kopiert: 'Kopyalandı', kopierenHand: 'Lütfen elle kopyalayın',
 
       rsvpTitel: 'Katılım bildirimi',
@@ -335,7 +340,7 @@ window.HOCHZEIT = {
 
       verantwortlich: 'İçerik sorumlusu: Dilara Sarıca ve Furkan Zarga · hallo@dilara-und-furkan.de',
       datenschutz: 'Bu sayfa çerez kullanmaz, yazı tiplerini ve haritaları başka sunuculardan yüklemez. '
-                 + 'Google Takvim düğmesi yalnızca siz dokununca bir Google sayfası açar.',
+                 + 'Takvim kaydı cihazınızda oluşturulur; harita düğmeleri yalnızca siz dokununca bir harita uygulaması açar.',
       demoHinweis: 'JP Webstudio demo davetiyesi, GitHub Pages üzerinde. Çift, tarih ve banka bilgisi kurgudur.',
       seitentitel: namen => namen + ' — Evleniyoruz',
     },
