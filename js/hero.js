@@ -259,33 +259,36 @@
   // Feder traege mit. Ohne diese Traegheit ruckt sie in jeder Schleife.
   let neigungIst = FEDER_NEIGUNG;
 
-  function federAufPfad(l, hebung, weite, sichtbar, dt) {
-    const hier = amPfad(l);
-    const dort = amPfad(Math.min(schreib.laenge, l + 2.2));
-    const roh = Math.atan2(dort.y - hier.y, dort.x - hier.x) * 180 / Math.PI;
+  function federAufPfad(z, sichtbar, dt) {
+    // Die Position kommt aus dem Profil - auch zwischen zwei Zuegen, wo
+    // die Feder ueber das Papier gleitet statt auf der Stelle zu warten.
+    const x = schreib.ox + z.x * schreib.s;
+    const y = schreib.oy + z.y * schreib.s;
+    const dort = amPfad(Math.min(schreib.laenge, z.l + 2.2));
+    const roh = Math.atan2(dort.y - (schreib.oy + z.y * schreib.s),
+                           dort.x - (schreib.ox + z.x * schreib.s)) * 180 / Math.PI;
 
-    // Beim Absetzen loest sich die Spitze vom Papier: sie steigt, kippt
-    // etwas auf und kommt der Kamera minimal naeher.
-    const hoch = hebung * Math.min(58, 12 + weite * schreib.s * 0.5);
-    const gr   = 1 + hebung * 0.05;
+    // Beim echten Absetzen loest sich die Spitze; beim Weitergleiten
+    // innerhalb eines Buchstabens bleibt sie praktisch auf dem Papier.
+    const hoch = z.hebung * Math.min(30, 6 + z.weite * schreib.s * 0.16);
+    const gr   = 1 + z.hebung * 0.022;
 
-    // Eine Hand ist ruhig, aber nicht starr - das Wiegen laeuft in der
-    // Zeit, nicht im Weg. Am Weg gekoppelt wuerde es mit dem Schreibtempo
-    // mitflattern.
-    const wiegen = Math.sin(performance.now() / 900) * 0.5
-                 + Math.sin(performance.now() / 1450) * 0.3;
+    // Das Wiegen der Hand laeuft in der Zeit, nicht im Weg - am Weg
+    // gekoppelt flatterte es mit dem Schreibtempo mit.
+    const jetzt = performance.now();
+    const wiegen = Math.sin(jetzt / 1100) * 0.42 + Math.sin(jetzt / 1730) * 0.26;
 
-    let ziel = FEDER_NEIGUNG + roh * 0.1 + wiegen - hebung * 6;
+    let ziel = FEDER_NEIGUNG + roh * 0.07 + wiegen - z.hebung * 3;
     // Kuerzesten Weg nehmen: atan2 springt bei plus/minus 180 Grad um
     // volle 360 - ungebremst reisst das die Feder jedes Mal herum.
     let ab = ziel - neigungIst;
     while (ab >  180) ab -= 360;
     while (ab < -180) ab += 360;
-    const traegheit = 1 - Math.pow(0.0016, Math.min(0.05, (dt || 16) / 1000));
+    const traegheit = 1 - Math.pow(0.004, Math.min(0.05, (dt || 16) / 1000));
     neigungIst += ab * traegheit;
 
     federEl.setAttribute('transform',
-      'translate(' + hier.x.toFixed(2) + ',' + (hier.y - hoch).toFixed(2) + ') ' +
+      'translate(' + x.toFixed(2) + ',' + (y - hoch).toFixed(2) + ') ' +
       'rotate(' + neigungIst.toFixed(2) + ') scale(' + gr.toFixed(4) + ')');
     federEl.setAttribute('opacity', sichtbar.toFixed(2));
   }
@@ -322,40 +325,60 @@
 
   function profilBauen() {
     const L = schreib.laenge, g = schreib.grenzen;
-    const zeit = [], weg = [], hub = [], weit = [];
+    const zeit = [], wegs = [], px = [], py = [], hub = [], weit = [];
     const punkt = l => schreib.mess.getPointAtLength(Math.max(0, Math.min(L, l)));
 
     let t = 0, zug = 0;
     for (let l = 0; l <= L; l += ABTASTUNG) {
-      // Kruemmung aus drei benachbarten Punkten
       const a = punkt(l - ABTASTUNG), b = punkt(l), c = punkt(l + ABTASTUNG);
       let dw = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(b.y - a.y, b.x - a.x);
       while (dw >  Math.PI) dw -= 2 * Math.PI;
       while (dw < -Math.PI) dw += 2 * Math.PI;
       const kruemmung = Math.abs(dw) / ABTASTUNG;
-      // v ~ r^(1/3); der Nenner deckelt, damit die Feder nie stehenbleibt
       const v = Math.pow(1 / (1 + kruemmung * 34), 1 / 3);
 
-      zeit.push(t); weg.push(l); hub.push(0); weit.push(0);
+      zeit.push(t); wegs.push(l); px.push(b.x); py.push(b.y); hub.push(0); weit.push(0);
       t += ABTASTUNG / Math.max(0.22, v);
 
-      // Am Ende eines Zuges hebt die Feder ab und setzt neu an
+      /* Der Uebergang zum naechsten Zug.
+
+         Die Schrift besteht aus 49 Einzelzuegen, aber eine Hand hebt
+         nicht 48-mal ab. Zwischen zwei Boegen desselben Buchstabens
+         gleitet sie einfach weiter - flach, schnell, ohne die Spitze
+         wirklich zu loesen. Nur der Weg zum i-Punkt oder hinunter in
+         die naechste Zeile ist ein echtes Absetzen.
+
+         Entscheidend ist ausserdem, dass die Feder waehrend dieser Zeit
+         WANDERT. Vorher stand sie am Zugende und wippte auf der Stelle,
+         bevor sie weitersprang - genau das sah nicht nach Schreiben aus. */
       while (zug < g.length - 1 && l >= g[zug]) {
-        const dauer = schreib.pausen[zug] * 0.9;
-        const w = schreib.spruenge[zug];
-        for (let k = 1; k <= 5; k++) {
-          zeit.push(t + dauer * k / 5);
-          weg.push(g[zug]);
-          hub.push(Math.sin((k / 5) * Math.PI));
-          weit.push(w);
+        const von = punkt(g[zug] - 0.02);          // Ende dieses Zuges
+        const bis = punkt(g[zug] + 0.02);          // Ansatz des naechsten
+        const w = Math.hypot(bis.x - von.x, bis.y - von.y);
+        const echt = w > 13;                        // echtes Absetzen?
+        const dauer = echt ? 8 + w * 0.34 : 1.1 + w * 0.28;
+        const stufen = echt ? 6 : 3;
+
+        for (let k = 1; k <= stufen; k++) {
+          const f = k / stufen;
+          // Weicher Ein- und Auslauf, damit der Uebergang nicht ruckt
+          const e = f * f * (3 - 2 * f);
+          const bogen = Math.sin(f * Math.PI);
+          zeit.push(t + dauer * f);
+          wegs.push(g[zug]);
+          px.push(von.x + (bis.x - von.x) * e);
+          py.push(von.y + (bis.y - von.y) * e - (echt ? bogen * w * 0.16 : 0));
+          hub.push(echt ? bogen : 0);
+          weit.push(echt ? w : 0);
         }
         t += dauer;
         zug++;
       }
     }
-    zeit.push(t); weg.push(L); hub.push(0); weit.push(0);
+    const letzt = punkt(L);
+    zeit.push(t); wegs.push(L); px.push(letzt.x); py.push(letzt.y); hub.push(0); weit.push(0);
 
-    schreib.profil = { zeit: zeit, weg: weg, hub: hub, weit: weit, dauer: t, zeiger: 0 };
+    schreib.profil = { zeit, weg: wegs, px, py, hub, weit, dauer: t, zeiger: 0 };
   }
 
   /* ---------------------------------------------------------
@@ -377,9 +400,12 @@
 
     const t0 = pr.zeit[i], t1 = pr.zeit[i + 1];
     const f = t1 > t0 ? (t - t0) / (t1 - t0) : 0;
+    const misch = (a, b) => a + (b - a) * f;
     return {
-      l:      pr.weg[i]  + (pr.weg[i + 1]  - pr.weg[i])  * f,
-      hebung: pr.hub[i]  + (pr.hub[i + 1]  - pr.hub[i])  * f,
+      l:      misch(pr.weg[i], pr.weg[i + 1]),
+      x:      misch(pr.px[i],  pr.px[i + 1]),
+      y:      misch(pr.py[i],  pr.py[i + 1]),
+      hebung: misch(pr.hub[i], pr.hub[i + 1]),
       weite:  pr.weit[i],
     };
   }
@@ -460,7 +486,7 @@
         const p = (t - s1) / SCHREIBEN;
         const z = schreibPunkt(p);
         tinteSetzen(z.l);
-        federAufPfad(z.l, z.hebung, z.weite, 1, now - zuletzt);
+        federAufPfad(z, 1, now - zuletzt);
       } else if (t < s3) {
         // Abheben vom letzten Buchstaben weg, nach rechts oben aus dem Bild
         const p = easeIO((t - s2) / ABHEBEN);
