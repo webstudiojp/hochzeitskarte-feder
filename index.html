@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Furkan &amp; Dilara — Wir heiraten</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Furkan und Dilara heiraten am 1. Januar 2027 auf Schloss Benrath in Düsseldorf.">
+
+<!-- Vorschau beim Teilen in WhatsApp, Telegram, iMessage.
+     og:image braucht eine vollstaendige Adresse - relative Pfade ignorieren
+     die Messenger. Bei einem neuen Projekt hier die eigene Domain eintragen. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Furkan &amp; Dilara">
+<meta property="og:title" content="Furkan &amp; Dilara — Wir heiraten">
+<meta property="og:description" content="1. Januar 2027 · Schloss Benrath, Düsseldorf. Hier ist unsere Einladung.">
+<meta property="og:url" content="https://webstudiojp.github.io/hochzeitskarte/">
+<meta property="og:image" content="https://webstudiojp.github.io/hochzeitskarte/assets/img/vorschau.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Furkan und Dilara, 1. Januar 2027">
+<meta property="og:locale" content="de_DE">
+<meta property="og:locale:alternate" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f4efe4">
+<script>
+/* Browser stellen beim Neuladen die alte Bildlaufposition wieder her.
+   Bei einer Karte mit Umschlag-Intro heisst das: der Gast landet mitten
+   im Ablauf statt am Anfang. Ein Sprungziel in der Adresse bleibt gueltig. */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (!location.hash) {
+  window.scrollTo(0, 0);
+  addEventListener('DOMContentLoaded', () => window.scrollTo(0, 0));
+  addEventListener('load', () => { if (!location.hash) window.scrollTo(0, 0); });
+}
+</script>
+<link rel="stylesheet" href="css/style.css?v=20260820224113">
+<link rel="stylesheet" href="css/karte.css?v=20260820224113">
+</head>
+<body>
+
+<!-- ============ UMSCHLAG-INTRO ============ -->
+<audio id="musik" loop preload="none"></audio>
+<div class="knopfleiste">
+<button class="sprachwahl" id="sprachwahl" type="button" aria-label="Sprache wechseln / Dili değiştir">
+  <!-- Als SVG gezeichnet, nicht als Emoji: Windows stellt Flaggen-Emoji
+       nur als Buchstabenpaar dar, dann staende dort "DE" statt einer Flagge. -->
+  <span class="flagge" id="fl-de" data-lang="de">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <clipPath id="rund-de"><circle cx="12" cy="12" r="11"/></clipPath>
+      <g clip-path="url(#rund-de)">
+        <rect x="0" y="1"  width="24" height="7.34" fill="#1a1a19"/>
+        <rect x="0" y="8.34" width="24" height="7.33" fill="#c8102e"/>
+        <rect x="0" y="15.67" width="24" height="7.33" fill="#e8b71a"/>
+      </g>
+      <circle cx="12" cy="12" r="11" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1"/>
+    </svg>
+  </span>
+  <span class="flagge" id="fl-tr" data-lang="tr">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <clipPath id="rund-tr"><circle cx="12" cy="12" r="11"/></clipPath>
+      <g clip-path="url(#rund-tr)">
+        <rect x="0" y="0" width="24" height="24" fill="#e30a17"/>
+        <!-- Halbmond: weisser Kreis, vom roten teilweise ueberdeckt -->
+        <circle cx="10.4" cy="12" r="5" fill="#fff"/>
+        <circle cx="11.9" cy="12" r="4" fill="#e30a17"/>
+        <path d="M16.9 12 l3.72 1.21 -2.3 -3.16 0 3.9 2.3 -3.16 z" fill="#fff"/>
+      </g>
+      <circle cx="12" cy="12" r="11" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1"/>
+    </svg>
+  </span>
+</button>
+<button class="musikknopf" id="btn-musik" type="button" hidden aria-label="Musik">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="mk-note" d="M9 18V5l10-2v13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle class="mk-note" cx="6.5" cy="18" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle class="mk-note" cx="16.5" cy="16" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <path class="mk-strich" d="M4 20L20 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+</button>
+
+</div>
+
+<div id="envelope-screen" class="screen">
+  <div class="env-inner">
+    <p class="env-kicker" id="env-kicker">Eine Einladung für dich</p>
+    <button class="envelope" id="envelope" aria-label="Einladung öffnen">
+      <div class="env-buehne">
+        <!-- Die Karte steckt im Umschlag und gleitet beim Oeffnen heraus -->
+        <div class="env-karte" id="env-karte" aria-hidden="true">
+          <span class="ek-linie"></span>
+          <span class="ek-namen" id="ek-namen">Furkan &amp; Dilara</span>
+          <span class="ek-linie"></span>
+        </div>
+        <svg viewBox="0 0 200 140" class="env-svg" aria-hidden="true">
+          <rect x="4" y="24" width="192" height="112" rx="6" class="env-body"/>
+          <path d="M4 30 L100 96 L196 30" class="env-flap-back"/>
+          <!-- Vorderseite verdeckt die Karte, bis sie ganz heraus ist -->
+          <path d="M4 136 L100 74 L196 136 Z" class="env-front"/>
+          <path d="M4 136 L4 30 L100 92 L196 30 L196 136 Z" class="env-front"/>
+          <path class="env-seal-ring" d="M100 74 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0"/>
+          <g class="env-flap" id="env-flap">
+            <path d="M4 30 L100 96 L196 30 L196 24 L4 24 Z" class="env-flap-shape"/>
+          </g>
+        </svg>
+      </div>
+    </button>
+    <p class="env-hint">Tippe auf den Umschlag</p>
+  </div>
+</div>
+
+<!-- ============ HERO: DIE FAHRT ============ -->
+<section id="hero" class="hero" aria-label="Animierte Einladung">
+  <button id="skip" class="skip" hidden>Überspringen</button>
+
+  <div class="hero-grund" aria-hidden="true">
+    <img src="assets/img/allee.webp?v=20260820224113" alt="" decoding="async">
+  </div>
+
+  <svg id="scene" class="scene" viewBox="0 0 1000 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <!-- Maske: enthuellt den Schriftzug fortschreitend von oben nach unten -->
+      <mask id="revealMask">
+        <rect id="reveal-rect" x="0" y="0" width="1000" height="0" fill="#fff"/>
+      </mask>
+      <filter id="tempo" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur id="tempo-blur" stdDeviation="0 0"/>
+      </filter>
+      <filter id="weich" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="20"/>
+      </filter>
+      <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#2a2118" stop-opacity=".5"/>
+        <stop offset="26%"  stop-color="#2a2118" stop-opacity="0"/>
+        <stop offset="70%"  stop-color="#2a2118" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#2a2118" stop-opacity=".72"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Die Allee -->
+    <image href="assets/img/allee.webp?v=20260820224113" x="0" y="0" width="1000" height="1800"
+           preserveAspectRatio="xMidYMid slice"/>
+
+    <!-- Perlen, die aus dem Heck rieseln -->
+    <g id="pearls"></g>
+
+    <!-- Schriftzug + Herz, als Perlenkette, maskiert -->
+    <g mask="url(#revealMask)">
+      <g id="script-group">
+      </g>
+    </g>
+
+    <path id="heart" opacity="0" fill="none" stroke="#fff6e8" stroke-width="6"
+            stroke-linecap="round" stroke-dasharray="0.5 9"
+            d="M500 1284 c-22 -33 -70 -25 -70 12 c0 33 44 55 70 81 c26 -26 70 -48 70 -81 c0 -37 -48 -45 -70 -12 z"/>
+
+    <!-- Der Wagen -->
+    <g id="car" opacity="0">
+      <!-- Sonne steht links: der Schatten faellt nach rechts unten -->
+      <ellipse cx="92" cy="104" rx="112" ry="330" fill="#120d07" opacity=".44" filter="url(#weich)"/>
+      <g filter="url(#tempo)">
+        <image href="assets/img/wagen.webp?v=20260820224113" x="-150" y="-401" width="300" height="802"/>
+      </g>
+    </g>
+
+    <!-- Licht + Vignette -->
+    <rect width="1000" height="1800" fill="url(#vignette)" style="pointer-events:none"/>
+  </svg>
+
+  <div class="hero-caption" id="hero-caption">
+    <p class="hc-line">wir heiraten</p>
+    <p class="hc-date" id="hc-date">01. Januar 2027</p>
+  </div>
+
+  <div class="scroll-cue" id="scroll-cue">
+    <span>Weiter</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
+</section>
+
+<main id="karte">
+  <!-- ---------- Kopf der Karte ---------- -->
+  <section class="sek kopf" id="sek-kopf">
+    <div class="kulisse" aria-hidden="true">
+      <img class="kulisse-grund" data-px="5" src="assets/img/rahmen.webp?v=20260820224113" alt="" loading="eager" decoding="async">
+      <div class="tauben" id="tauben"></div>
+      <span class="kulisse-schleier"></span>
+    </div>
+    <p class="monogramm rv" data-rv="1" id="monogramm" aria-hidden="true"></p>
+    <p class="ueberzeile rv" data-rv="2" id="kopf-ueber">Die Einladung</p>
+    <h1 class="paarnamen rv" data-rv="2"><span id="k-namen">Furkan &amp; Dilara</span></h1>
+    <p class="kopf-zeile rv" data-rv="3"><span id="k-zeile">wir heiraten</span></p>
+    <div class="datum rv" data-rv="4">
+      <span class="datum-strich"></span>
+      <span class="datum-monat" id="d-monat"></span>
+      <span class="datum-tag" id="d-tag"></span>
+      <span class="datum-jahr" id="d-jahr"></span>
+      <span class="datum-strich"></span>
+    </div>
+    <p class="datum-wochentag rv" data-rv="5" id="d-wochentag"></p>
+
+    <p class="merken rv" data-rv="6" id="merken-text">Erinnerung hinzufügen</p>
+    <div class="kalender-knoepfe rv" data-rv="7">
+      <button class="knopf knopf-linie" id="btn-kalender" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="knopf-icon"><path d="M16.4 12.9c0-2 1.6-3 1.7-3.1-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 6 1 8 .7 1 1.5 2.1 2.5 2 1-.1 1.4-.6 2.6-.6s1.5.6 2.6.6c1.1 0 1.8-1 2.4-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3zM14.5 6.9c.5-.7.9-1.6.8-2.6-.8 0-1.8.6-2.4 1.2-.5.6-1 1.6-.8 2.5.9.1 1.8-.4 2.4-1.1z" fill="currentColor"/></svg>
+        <span id="btn-kalender-text">iPhone — Apple Kalender</span>
+      </button>
+      <a class="knopf knopf-linie" id="btn-google-cal" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="knopf-icon"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span id="btn-google-cal-text">Android — Google Kalender</span>
+      </a>
+    </div>
+  </section>
+  <!-- ---------- Ein Bild, das die Seite einmal aufreisst ---------- -->
+  <section class="grossbild" id="sek-zitat" aria-label="Bildmoment">
+    <img class="gb-bild" data-px="8" src="assets/img/g4-tafel.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <span class="gb-schleier"></span>
+    <div class="gb-text">
+      <p class="gb-gross rv" data-rv="1" id="zitat-gross"></p>
+      <p class="gb-klein rv" data-rv="2" id="zitat-klein"></p>
+    </div>
+  </section>
+  <!-- ---------- Countdown (Kontrastmoment, volle Breite) ---------- -->
+  <section class="sek-breit countdown" id="sek-countdown" aria-label="Countdown">
+    <img class="cd-grund" data-px="7" src="assets/img/g5-lichter.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <span class="cd-schleier"></span>
+    <p class="ueberzeile hell" id="cd-ueber">Noch</p>
+    <div class="cd-reihe" id="cd-reihe" role="timer" aria-live="off">
+      <div class="cd-feld"><span class="cd-zahl" id="cd-t">–</span><span class="cd-label" id="cd-l-tage">Tage</span></div>
+      <div class="cd-feld"><span class="cd-zahl" id="cd-s">–</span><span class="cd-label" id="cd-l-stunden">Stunden</span></div>
+      <div class="cd-feld"><span class="cd-zahl" id="cd-m">–</span><span class="cd-label" id="cd-l-minuten">Minuten</span></div>
+      <div class="cd-feld"><span class="cd-zahl" id="cd-k">–</span><span class="cd-label" id="cd-l-sekunden">Sekunden</span></div>
+    </div>
+    <p class="cd-fuss" id="cd-fuss"></p>
+  </section>
+
+  <!-- Zwei Bloecke nebeneinander, sobald der Platz reicht -->
+  <div class="doppel">
+  <!-- ---------- Anrede ---------- -->
+  <section class="sek anrede" id="sek-anrede">
+    <p class="fliess gross rv" data-rv="1" id="a-text"></p>
+    <p class="signatur rv" data-rv="2" id="a-gruss"></p>
+  </section>
+  <!-- ---------- Ablauf ---------- -->
+  <section class="sek ablauf" id="sek-ablauf">
+    <h2 class="sek-titel rv" data-rv="1" id="ablauf-titel">Der Tag</h2>
+    <ol class="zeitleiste" id="zeitleiste"></ol>
+  </section>
+  </div>
+
+  <!-- Zwei Bloecke nebeneinander, sobald der Platz reicht -->
+  <div class="doppel">
+  <!-- ---------- Ort ---------- -->
+  <section class="sek ort" id="sek-ort">
+    <h2 class="sek-titel rv" data-rv="1" id="ort-titel">Wo</h2>
+    <figure class="ort-bild rv" data-rv="2">
+      <img data-px="6" src="assets/img/g3-bogen.webp?v=20260820224113" id="ort-foto" alt="" loading="lazy" decoding="async">
+    </figure>
+    <div class="ort-raster">
+      <div>
+        <p class="ort-name rv" data-rv="2" id="o-name"></p>
+        <address class="ort-adresse rv" data-rv="3" id="o-adresse"></address>
+      </div>
+      <div class="kartenbild rv" data-rv="4" id="kartenbild"></div>
+    </div>
+    <div class="knopf-paar rv" data-rv="5">
+      <a class="knopf knopf-voll" id="btn-google" href="#" target="_blank" rel="noopener noreferrer"><span id="btn-google-text">Route mit Google Maps</span></a>
+      <a class="knopf knopf-linie" id="btn-apple" href="#" target="_blank" rel="noopener noreferrer"><span id="btn-apple-text">Apple Karten</span></a>
+    </div>
+    <p class="ort-hinweis rv" data-rv="6" id="o-hinweis"></p>
+  </section>
+  <!-- ---------- Dresscode ---------- -->
+  <section class="sek dresscode" id="sek-dresscode">
+    <h2 class="sek-titel rv" data-rv="1" id="dresscode-titel">Dresscode</h2>
+    <p class="dc-titel rv" data-rv="2" id="dc-titel"></p>
+    <p class="fliess rv" data-rv="3" id="dc-text"></p>
+    <ul class="dc-farben rv" data-rv="4" id="dc-farben"></ul>
+  </section>
+  </div>
+  <!-- ---------- Gut zu wissen ---------- -->
+  <section class="sek wissen" id="sek-wissen">
+    <h2 class="sek-titel rv" data-rv="1" id="wissen-titel">Gut zu wissen</h2>
+    <div class="wi-liste" id="wissen-liste"></div>
+  </section>
+  <!-- ---------- Familien ---------- -->
+  <section class="sek familien" id="sek-familien">
+    <h2 class="sek-titel rv" data-rv="1" id="familien-titel">Mit uns freuen sich</h2>
+    <div class="fam-liste" id="fam-liste"></div>
+  </section>
+  <!-- ---------- Galerie (volle Breite) ---------- -->
+  <section class="sek-breit galerie" id="sek-galerie">
+    <h2 class="sek-titel schmal-zentriert" id="galerie-titel">Wir zwei</h2>
+    <div class="gal-band" id="gal-band"></div>
+  </section>
+  <!-- ---------- Erinnerungen der Gaeste ---------- -->
+  <section class="sek erinnerung" id="sek-erinnerung">
+    <h2 class="sek-titel rv" data-rv="1" id="album-titel">Euer Blick auf den Tag</h2>
+    <p class="fliess rv" data-rv="2" id="album-text">Fotos, ein kurzes Video oder ein paar gesprochene Worte – alles, was ihr hier hochladet, landet in unserem Album.</p>
+    <div class="upload rv" data-rv="3">
+      <label class="upload-feld" for="upload-input">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="upload-text" id="upload-text">Datei auswählen</span>
+        <span class="upload-klein" id="upload-klein">Bild, Video oder Sprachnotiz</span>
+      </label>
+      <input type="file" id="upload-input" accept="image/*,video/*,audio/*" multiple hidden>
+      <ul class="upload-liste" id="upload-liste" hidden></ul>
+      <p class="hinweis-kasten" id="upload-hinweis" hidden></p>
+    </div>
+  </section>
+  <!-- ---------- Geschenk ---------- -->
+  <section class="sek geschenk" id="sek-geschenk">
+    <h2 class="sek-titel rv" data-rv="1" id="geschenk-titel">Geschenke</h2>
+    <p class="fliess rv" data-rv="2" id="g-text"></p>
+    <div class="iban-zeile rv" data-rv="3">
+      <div>
+        <span class="iban-label" id="g-inhaber"></span>
+        <span class="iban-nummer" id="g-iban"></span>
+      </div>
+      <button class="knopf knopf-klein" id="btn-iban" type="button">Kopieren</button>
+    </div>
+  </section>
+  <!-- ---------- Rueckmeldung ---------- -->
+  <section class="sek rsvp" id="sek-rsvp">
+    <h2 class="sek-titel rv" data-rv="1" id="rsvp-titel">Sagt ihr uns Bescheid?</h2>
+    <p class="fliess rv" data-rv="2" id="r-hinweis"></p>
+    <form class="formular rv" data-rv="3" id="rsvp-form" novalidate>
+      <div class="feld">
+        <label for="f-name" id="l-name">Euer Name</label>
+        <input type="text" id="f-name" name="name" required autocomplete="name" placeholder="Ayşe und Deniz Yılmaz">
+        <p class="feld-fehler" id="e-name" hidden></p>
+      </div>
+
+      <fieldset class="feld feld-wahl">
+        <legend id="l-kommt">Kommt ihr?</legend>
+        <div class="wahl-reihe" role="radiogroup" aria-labelledby="l-kommt">
+          <button type="button" class="zusage-knopf ja" id="btn-ja" role="radio" aria-checked="false" data-wert="ja">
+            <span id="l-ja">Wir kommen</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="zk-herz"><path d="M12 20.4c-4.6-3.4-8-6-8-9.8a4.3 4.3 0 0 1 8-2.3 4.3 4.3 0 0 1 8 2.3c0 3.8-3.4 6.4-8 9.8Z"/></svg>
+          </button>
+          <button type="button" class="zusage-knopf nein" id="btn-nein" role="radio" aria-checked="false" data-wert="nein">
+            <span id="l-nein">Wir können leider nicht</span>
+          </button>
+        </div>
+        <input type="hidden" name="zusage" id="f-zusage" value="">
+        <p class="feld-fehler" id="e-zusage" hidden></p>
+      </fieldset>
+
+      <div class="feld" id="feld-anzahl">
+        <label for="f-anzahl" id="l-anzahl">Wie viele Personen</label>
+        <input type="number" id="f-anzahl" name="anzahl" min="1" max="12" value="2" inputmode="numeric">
+      </div>
+
+      <div class="feld">
+        <label for="f-gruss"><span id="l-gruss">Ein paar Worte an uns</span> <span class="feld-optional">optional</span></label>
+        <textarea id="f-gruss" name="gruss" rows="3" placeholder="Wir freuen uns schon!"></textarea>
+      </div>
+
+      <label class="einwilligung" for="f-dsgvo">
+        <input type="checkbox" id="f-dsgvo" name="dsgvo" required>
+        <span id="l-einwilligung">Ich bin einverstanden, dass meine Angaben zur Planung der Feier gespeichert und nach der Hochzeit gelöscht werden.</span>
+      </label>
+      <p class="feld-fehler" id="e-dsgvo" hidden></p>
+
+      <button class="knopf knopf-voll knopf-breit" type="submit" id="btn-senden">Rückmeldung senden</button>
+      <p class="hinweis-kasten" id="rsvp-hinweis" hidden></p>
+    </form>
+  </section>
+  <!-- ---------- Abschied ---------- -->
+  <section class="grossbild abschied" id="sek-abschied" aria-label="Abschied">
+    <img class="gb-bild" data-px="8" src="assets/img/g1-strauss.webp?v=20260820224113" alt="" loading="lazy" decoding="async">
+    <span class="gb-schleier"></span>
+    <div class="gb-text">
+      <p class="ab-gross rv" data-rv="1" id="abschied-gross"></p>
+      <p class="gb-klein rv" data-rv="2" id="abschied-text"></p>
+    </div>
+  </section>
+
+  <footer class="fuss">
+    <p class="fuss-namen" id="f-namen"></p>
+    <p class="fuss-datum" id="f-datum"></p>
+    <hr class="linie">
+    <p class="fuss-klein" id="f-recht"></p>
+    <p class="fuss-klein" id="f-hoster"></p>
+    <p class="fuss-demo" id="f-demo">Demo-Karte von JP Webstudio, gehostet auf GitHub Pages.</p>
+  </footer>
+</main>
+
+<!-- Galerie in gross -->
+<div class="lupe" id="lupe" role="dialog" aria-modal="true" aria-label="Bild in groß">
+  <button class="lupe-blaettern lupe-zurueck" id="lupe-zurueck" type="button" aria-label="Vorheriges Bild">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <img id="lupe-bild" alt="" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+  <button class="lupe-blaettern lupe-vor" id="lupe-vor" type="button" aria-label="Nächstes Bild">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="lupe-zu" id="lupe-zu" type="button" aria-label="Schließen">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <p class="lupe-text" id="lupe-text"></p>
+</div>
+
+<script src="js/config.js?v=20260820224113"></script>
+<script src="js/hero.js?v=20260820224113"></script>
+<script src="js/karte.js?v=20260820224113"></script>
+</body>
+</html>

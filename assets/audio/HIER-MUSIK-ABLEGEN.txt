@@ -1,0 +1,27 @@
+Hintergrundmusik: musik.mp3
+
+AKTUELL EINGEBUNDEN
+Ney-Solo (türkische Rohrflöte), Ausschnitt von 1:55 bis 3:43.
+Quelle:  https://freesound.org/people/avnonsen/sounds/440815
+Urheber: avnonsen
+Lizenz:  CC0 1.0 (Public Domain Dedication)
+
+CC0 heißt: kommerziell nutzbar, keine Namensnennung nötig, keine
+Weitergabe-unter-gleichen-Bedingungen. Für eine Seite, mit der Kunden
+gewonnen werden, ist das die einzige wirklich sorgenfreie Lizenz.
+Die Angabe hier steht aus Anstand, nicht aus Pflicht.
+
+BEARBEITUNG
+Das Original ist eine Improvisation mit stark schwankender Lautstärke
+(-14 bis -26 dB) und lief bis 0 dB. Für Hintergrundmusik wurde der
+gleichmäßigste Abschnitt geschnitten, nach EBU R128 auf -20 LUFS
+normalisiert, auf Mono gelegt und mit Ein- und Ausklang versehen.
+
+WENN DU SIE TAUSCHEN WILLST
+Einfach diese Datei ersetzen. Empfehlung: Mono, 80-96 kBit/s, unter 2 MB.
+
+Achtung bei anderen Quellen: Türkische Hochzeitsmusik ist fast immer
+urheberrechtlich geschützt, und CC-Lizenzen mit "NC" (nicht kommerziell)
+oder "SA" (Weitergabe unter gleichen Bedingungen) taugen für eine
+Verkaufsdemo nicht. Saubere kommerzielle Quellen: Epidemic Sound,
+Artlist, Musicbed.

@@ -1,0 +1,958 @@
+/* =========================================================
+   DIE KARTE — Programmheft-Anmutung, eine schmale Spalte,
+   zweimal von einem vollbreiten Moment unterbrochen.
+   ========================================================= */
+
+@font-face{font-family:'Manrope';src:url('../assets/fonts/Manrope-latin.woff2') format('woff2');
+  font-weight:400 600;font-display:swap;
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Manrope';src:url('../assets/fonts/Manrope-latinext.woff2') format('woff2');
+  font-weight:400 600;font-display:swap;
+  unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+
+:root{
+  /* Farbwelt: Abendlicht auf Asphalt, Kerzenwachs, Leinen, Eukalyptus.
+     Bewusst nicht Rosé/Glanzgold — das waere der Kategorie-Reflex. */
+  --nacht:        #221c16;
+  --nacht-weich:  #33291f;
+  --leinen:       #f4efe4;
+  --leinen-tief:  #ece4d5;
+  --tinte:        #2f2921;
+  --tinte-weich:  #6a6053;
+  --tinte-zart:   #948875;
+  --akzent:       #a8894e;
+  --linie:        #d9cfba;
+
+  /* Farbfamilien fuer die Abschnitte - bewusst mehrfarbig statt einfarbig */
+  --salbei:       #e6ede1;  --salbei-tief:  #5f7a58;
+  --rose:         #f9e8de;  --rose-tief:    #b8735a;
+  --himmel:       #e3edf2;  --himmel-tief:  #456a83;
+  --sonne:        #f8eed6;  --sonne-tief:   #a8894e;
+
+  /* Type-Scale, Ratio 1.25 */
+  --t-xs:  0.78rem;
+  --t-s:   0.9rem;
+  --t-m:   1.0625rem;
+  --t-l:   1.33rem;
+  --t-xl:  1.66rem;
+  --t-2xl: 2.07rem;
+  --t-3xl: 2.6rem;
+
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+::selection{background:var(--akzent);color:var(--leinen)}
+html{scrollbar-color:var(--linie) var(--leinen)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--leinen)}
+::-webkit-scrollbar-thumb{background:var(--linie);border-radius:0}
+
+:focus-visible{outline:2px solid var(--akzent);outline-offset:3px}
+
+#karte{
+  background:var(--leinen);
+  color:var(--tinte);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:var(--t-m);
+  line-height:1.65;
+  position:relative;
+}
+
+/* Rhythmus variiert bewusst je Abschnitt statt ueberall gleichem Abstand */
+.sek{
+  max-width:34rem;margin-inline:auto;
+  padding:clamp(56px,9vw,88px) clamp(22px,6vw,34px);
+}
+.sek-breit{padding:clamp(60px,10vw,104px) clamp(22px,6vw,34px)}
+.sek.kopf{
+  padding-top:clamp(72px,13vw,120px);padding-bottom:clamp(40px,7vw,60px);
+  position:relative;overflow:hidden;
+}
+.blueten{position:absolute;inset:0;pointer-events:none;z-index:0}
+.bluete{
+  position:absolute;border-radius:60% 40% 55% 45%;opacity:.5;
+  animation:schweben linear infinite;
+}
+.sek.kopf > *:not(.blueten):not(.kulisse){position:relative;z-index:1}
+@keyframes schweben{
+  from{transform:translate3d(0,-14vh,0) rotate(0deg)}
+  to  {transform:translate3d(var(--drift,20px),108vh,0) rotate(var(--dreh,220deg))}
+}
+.sek.anrede     {padding-top:clamp(20px,4vw,30px);padding-bottom:clamp(64px,11vw,104px)}
+.sek.ablauf{
+  padding-block:clamp(68px,12vw,112px);
+  background:var(--salbei);max-width:none;
+}
+.sek.ablauf > *{max-width:34rem;margin-inline:auto}
+.sek.ablauf .ueberzeile,.sek.ablauf .zl-zeit{color:var(--salbei-tief)}
+.sek.familien{
+  padding-block:clamp(56px,9vw,84px);
+  background:var(--rose);max-width:none;
+}
+.sek.familien > *{max-width:34rem;margin-inline:auto}
+.sek.familien .fam-zeile{border-color:#eed6c8}
+.sek.familien .fam-rolle{color:var(--rose-tief)}
+.sek.dresscode  {padding-block:clamp(48px,8vw,72px)}
+.sek.geschenk{
+  padding-block:clamp(52px,8vw,76px);
+  background:var(--sonne);max-width:none;
+}
+.sek.geschenk > *{max-width:34rem;margin-inline:auto}
+.sek.geschenk .iban-zeile{border-color:#e6d5b0}
+.sek.teilen     {padding-block:clamp(36px,6vw,52px);text-align:center}
+
+/* ---------- Typografie ---------- */
+.ueberzeile{
+  margin:0 0 18px;font-size:var(--t-xs);letter-spacing:.28em;text-transform:uppercase;
+  color:var(--akzent);font-weight:500;
+}
+.ueberzeile.hell{color:#c6a86f}
+.sek-titel{
+  font-family:Arial,Helvetica,sans-serif;font-weight:700;
+  font-size:var(--t-2xl);letter-spacing:-0.02em;line-height:1.1;
+  margin:0 0 28px;text-wrap:balance;
+}
+.sek-titel.schmal-zentriert{max-width:34rem;margin-inline:auto;text-align:center}
+.fliess{max-width:62ch;text-wrap:pretty;color:var(--tinte-weich);margin:0 0 20px}
+.fliess.gross{font-size:clamp(1.06rem,4.1vw,1.2rem);line-height:1.62;color:var(--tinte)}
+.fliess.klein{font-size:var(--t-s)}
+
+.paarnamen{
+  font-family:'Great Vibes',cursive;font-weight:400;
+  font-size:clamp(2.9rem,13vw,4.4rem);line-height:1.05;
+  margin:0 0 10px;color:var(--tinte);
+}
+.kopf-zeile{
+  margin:0 0 22px;font-size:var(--t-xs);letter-spacing:.34em;
+  text-transform:uppercase;color:var(--tinte-zart);
+}
+.kopf-datum{
+  font-family:Arial,Helvetica,sans-serif;font-size:var(--t-xl);
+  margin:0 0 34px;letter-spacing:.01em;
+}
+.signatur{
+  font-family:'Great Vibes',cursive;font-size:var(--t-2xl);
+  color:var(--tinte);margin:26px 0 0;
+}
+
+/* ---------- Knoepfe ---------- */
+.knopf{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:inherit;font-size:var(--t-s);font-weight:500;letter-spacing:.06em;
+  padding:13px 24px;border-radius:2px;cursor:pointer;text-decoration:none;
+  transition:background .22s var(--ease-out-quart),color .22s var(--ease-out-quart),
+             border-color .22s var(--ease-out-quart);
+}
+.knopf-icon{width:17px;height:17px;flex:none}
+.knopf-linie{
+  background:transparent;color:var(--tinte);border:1px solid var(--linie);
+}
+.knopf-linie:hover{border-color:var(--akzent);color:var(--akzent)}
+.knopf-voll{
+  background:var(--nacht);color:var(--leinen);border:1px solid var(--nacht);
+}
+.knopf-voll:hover{background:var(--nacht-weich);border-color:var(--nacht-weich)}
+.knopf-klein{
+  padding:8px 15px;font-size:var(--t-xs);background:transparent;
+  color:var(--tinte-weich);border:1px solid var(--linie);flex:none;
+}
+.knopf-klein:hover{border-color:var(--akzent);color:var(--akzent)}
+.knopf-breit{width:100%;padding-block:15px;margin-top:18px}
+.knopf-paar{display:flex;flex-wrap:wrap;gap:11px;margin:26px 0 20px}
+.knopf-paar .knopf{flex:1 1 14rem}
+
+/* ---------- Countdown: dunkler Kontrastmoment ---------- */
+.countdown{
+  background:var(--nacht);color:var(--leinen);text-align:center;
+}
+.cd-reihe{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(7px,2.4vw,14px);max-width:32rem;margin:0 auto;
+}
+/* Echte Kacheln statt freistehender Ziffern - auf dem Foto braucht
+   die Zahl einen eigenen Grund, sonst frisst das Bokeh sie auf. */
+.cd-feld{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  padding:clamp(13px,3.4vw,20px) clamp(4px,1.6vw,10px) clamp(10px,2.6vw,15px);
+  background:rgba(28,21,14,.42);
+  border:1px solid rgba(240,229,210,.20);
+  border-radius:3px;
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  box-shadow:0 10px 30px rgba(10,7,4,.34),inset 0 1px 0 rgba(255,250,240,.09);
+}
+.cd-zahl{
+  font-size:clamp(1.9rem,9vw,2.9rem);
+  line-height:1;letter-spacing:-0.02em;
+  font-variant-numeric:lining-nums tabular-nums;
+  display:inline-block;position:relative;overflow:hidden;
+}
+.cd-zahl.rollt{animation:ziffer-roll .42s var(--ease-out-quart)}
+@keyframes ziffer-roll{
+  0%  {transform:translateY(-38%);opacity:.35}
+  60% {opacity:1}
+  100%{transform:translateY(0);opacity:1}
+}
+/* Feine Trennlinie zwischen Zahl und Bezeichnung */
+.cd-label::before{
+  content:'';display:block;width:22px;height:1px;
+  margin:clamp(8px,2vw,11px) auto clamp(7px,1.8vw,10px);
+  background:rgba(240,229,210,.26);
+}
+.cd-label{
+  font-size:clamp(9px,2.4vw,11px);letter-spacing:.16em;text-transform:uppercase;
+  color:#c9b795;white-space:nowrap;
+}
+.cd-fuss{
+  margin:30px 0 0;font-size:var(--t-s);color:#a4947c;
+}
+
+/* ---------- Zeitleiste: ungleiche Spuren, 1px-Trenner statt Cards ---------- */
+.zeitleiste{list-style:none;margin:0;padding:0}
+.zl-punkt{
+  display:grid;grid-template-columns:4.4rem 1fr;gap:0 clamp(20px,5vw,28px);
+  padding:20px 0;border-top:1px solid var(--linie);
+}
+.zl-zeit{
+  font-variant-numeric:tabular-nums;font-weight:600;font-size:var(--t-s);
+  color:var(--akzent);letter-spacing:.02em;padding-top:.34em;
+}
+
+/* ---------- Ort ---------- */
+.ort-name{font-family:Arial,Helvetica,sans-serif;font-size:var(--t-xl);margin:0 0 4px}
+.ort-adresse{font-style:normal;color:var(--tinte-weich);margin:0}
+.kartenbild{
+  margin-top:26px;border:1px solid var(--linie);background:var(--leinen-tief);
+  aspect-ratio:16/10;overflow:hidden;
+}
+.kartenbild svg{display:block;width:100%;height:100%}
+.ort-hinweis{font-size:var(--t-s);color:var(--tinte-weich);margin:0;max-width:52ch}
+
+/* ---------- Familien: editoriale Zeilen ---------- */
+.fam-liste{display:flex;flex-direction:column}
+.fam-zeile{padding:17px 0;border-top:1px solid var(--linie)}
+.fam-zeile:last-child{border-bottom:1px solid var(--linie)}
+.fam-rolle{
+  margin:0 0 3px;font-size:var(--t-xs);letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tinte-zart);
+}
+.fam-namen{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:var(--t-l)}
+
+/* ---------- Dresscode ---------- */
+.dc-titel{font-family:Arial,Helvetica,sans-serif;font-size:var(--t-xl);margin:0 0 12px}
+.dc-farben{list-style:none;display:flex;flex-wrap:wrap;gap:20px;margin:24px 0 0;padding:0}
+.dc-farbe{display:flex;flex-direction:column;align-items:center;gap:8px}
+.dc-feld{
+  width:54px;height:54px;border-radius:50%;border:1px solid rgba(47,41,33,.14);
+  transition:transform .4s var(--ease-out-expo);
+}
+.dc-farbe:hover .dc-feld{transform:scale(1.09) rotate(-4deg)}
+.dc-name{font-size:var(--t-xs);letter-spacing:.1em;color:var(--tinte-weich)}
+
+/* ---------- Galerie: volle Breite, ungleiche Groessen ---------- */
+.galerie{background:var(--himmel)}
+.gal-band{
+  display:grid;gap:10px;margin-top:30px;
+  grid-template-columns:repeat(2,1fr);
+  max-width:62rem;margin-inline:auto;
+}
+.gal-bild{
+  background:#ddd3bf;
+  --g1:#d9c7b0; --g2:#c2b295;
+  width:100%;margin:0;overflow:hidden;position:relative;
+}
+/* Vier Aufnahmen im Querformat - die Seitenverhaeltnisse bleiben nah
+   am Original, damit nichts Wichtiges weggeschnitten wird. */
+.gal-bild:nth-child(1){grid-column:span 2;aspect-ratio:3/2}
+.gal-bild:nth-child(2){grid-column:span 1;aspect-ratio:4/5}
+.gal-bild:nth-child(3){grid-column:span 1;aspect-ratio:4/5}
+.gal-bild:nth-child(4){grid-column:span 2;aspect-ratio:3/2}
+/* Absolut gesetzt, sonst sprengt der Text die Kachel und aspect-ratio faellt aus */
+.gal-platzhalter{
+  position:absolute;inset:0;margin:0;
+  display:grid;place-items:center;
+  font-size:0.72rem;line-height:1.5;color:#7d7059;letter-spacing:.05em;
+  text-align:center;padding:12px;overflow:hidden;
+  overflow-wrap:break-word;hyphens:auto;
+}
+/* Platz fuer die echten Fotos, sobald sie da sind */
+.gal-bild img{
+  object-fit:cover;object-position:center 42%;   /* Gesichter etwas ueber der Mitte */
+}
+/* Der Farbverlauf ist nur der Leerzustand - mit Foto wird er nicht gebraucht */
+.gal-bild:has(img)::before{display:none}
+
+/* Solange keine Fotos da sind: farbige Flaechen in ruhiger Bewegung */
+.gal-bild::before{
+  content:'';position:absolute;inset:-14%;
+  background:linear-gradient(142deg,var(--g1),var(--g2));
+  animation:wandern 24s var(--ease-in-out-sanft, ease-in-out) infinite alternate;
+}
+.gal-bild:nth-child(1){--g1:#e6cdb4;--g2:#c2a07f}
+.gal-bild:nth-child(2){--g1:#cfe0d2;--g2:#8fae95}
+.gal-bild:nth-child(3){--g1:#f2d7ca;--g2:#cf9d84}
+.gal-bild:nth-child(4){--g1:#cfdde7;--g2:#8ba7bb}
+.gal-bild:nth-child(5){--g1:#e9dcc0;--g2:#c4ab7d}
+.gal-bild:nth-child(2)::before{animation-duration:29s;animation-delay:-6s}
+.gal-bild:nth-child(3)::before{animation-duration:26s;animation-delay:-12s}
+.gal-bild:nth-child(4)::before{animation-duration:31s;animation-delay:-3s}
+.gal-bild:nth-child(5)::before{animation-duration:27s;animation-delay:-17s}
+@keyframes wandern{
+  from{transform:scale(1.02) translate3d(-1.5%,-1%,0)}
+  to  {transform:scale(1.12) translate3d(2%,1.5%,0)}
+}
+
+/* ---------- Upload ---------- */
+.upload-feld{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:34px 22px;border:1px dashed var(--linie);cursor:pointer;
+  color:var(--tinte-weich);text-align:center;
+  transition:border-color .25s var(--ease-out-quart),background .25s var(--ease-out-quart);
+}
+.upload-feld:hover{border-color:var(--akzent);background:rgba(168,137,78,.04)}
+.upload-feld svg{width:26px;height:26px;color:var(--akzent)}
+.upload-text{font-size:var(--t-s);font-weight:500;color:var(--tinte)}
+.upload-klein{font-size:var(--t-xs);color:var(--tinte-zart)}
+.upload-liste{list-style:none;margin:14px 0 0;padding:0;font-size:var(--t-s)}
+.upload-liste li{
+  padding:9px 0;border-top:1px solid var(--linie);
+  display:flex;justify-content:space-between;gap:12px;color:var(--tinte-weich);
+}
+.upload-groesse{font-variant-numeric:tabular-nums;color:var(--tinte-zart);flex:none}
+
+/* ---------- IBAN ---------- */
+.iban-zeile{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:17px 0;border-top:1px solid var(--linie);border-bottom:1px solid var(--linie);
+  margin-top:22px;
+}
+.iban-label{display:block;font-size:var(--t-xs);color:var(--tinte-zart);letter-spacing:.1em}
+.iban-nummer{
+  display:block;font-variant-numeric:tabular-nums;letter-spacing:.04em;
+  font-size:var(--t-s);margin-top:3px;
+}
+
+/* ---------- Formular ---------- */
+.formular{margin-top:8px}
+.feld{margin-bottom:22px;border:0;padding:0}
+.feld label,.feld legend{
+  display:block;font-size:var(--t-xs);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tinte-weich);margin-bottom:8px;padding:0;
+}
+.feld-optional{text-transform:none;letter-spacing:0;color:var(--tinte-zart);font-size:var(--t-xs)}
+.feld input[type=text],.feld input[type=number],.feld textarea{
+  width:100%;font-family:inherit;font-size:var(--t-m);color:var(--tinte);
+  background:transparent;border:0;border-bottom:1px solid var(--linie);
+  padding:9px 0;border-radius:0;
+  transition:border-color .25s var(--ease-out-quart);
+}
+.feld input::placeholder,.feld textarea::placeholder{color:var(--tinte-zart)}
+.feld input:focus,.feld textarea:focus{outline:0;border-bottom-color:var(--akzent)}
+.feld textarea{resize:vertical;line-height:1.6}
+.einwilligung{
+  display:flex;gap:12px;align-items:flex-start;
+  font-size:var(--t-s);color:var(--tinte-weich);line-height:1.55;
+  margin:26px 0 8px;cursor:pointer;
+}
+.einwilligung input{accent-color:var(--akzent);width:17px;height:17px;flex:none;margin-top:3px}
+.feld-fehler{
+  margin:8px 0 0;font-size:var(--t-s);color:#8f4b3c;
+}
+.feld input[aria-invalid=true],.feld textarea[aria-invalid=true]{border-bottom-color:#8f4b3c}
+.hinweis-kasten{
+  margin:18px 0 0;padding:14px 16px;font-size:var(--t-s);line-height:1.55;
+  background:var(--leinen-tief);border:1px solid var(--linie);color:var(--tinte-weich);
+}
+
+/* ---------- Fuss ---------- */
+.fuss{
+  background:var(--nacht);color:#b6a68e;text-align:center;
+  padding:clamp(52px,9vw,80px) clamp(22px,6vw,34px) clamp(38px,6vw,54px);
+}
+.fuss-namen{font-family:'Great Vibes',cursive;font-size:var(--t-2xl);color:var(--leinen);margin:0}
+.fuss-datum{margin:4px 0 0;font-size:var(--t-s);letter-spacing:.2em;text-transform:uppercase}
+.linie{border:0;border-top:1px solid rgba(182,166,142,.24);max-width:9rem;margin:30px auto}
+.fuss-klein{margin:0 0 9px;font-size:var(--t-xs);line-height:1.6;max-width:46ch;margin-inline:auto}
+.fuss-demo{margin:20px 0 0;font-size:var(--t-xs);color:#7d7159}
+
+/* ---------- Choreografie: Eintritt in Leserichtung ---------- */
+.rv{opacity:0;transform:translateY(14px)}
+.rv.da{
+  opacity:1;transform:none;
+  transition:opacity .9s var(--ease-out-expo),transform .9s var(--ease-out-expo);
+}
+.zl-punkt.rv.da,.fam-zeile.rv.da{transition-duration:.66s}
+.gal-bild.rv.da{transition-duration:1.05s}
+
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none}
+  .bluete,.gal-bild::before,.gal-bild img{animation:none}
+}
+
+@media (min-width:640px){
+  .gal-band{grid-template-columns:repeat(6,1fr);gap:14px}
+  .gal-bild:nth-child(1){grid-column:span 4;aspect-ratio:3/2}
+  .gal-bild:nth-child(2){grid-column:span 2;aspect-ratio:4/5}
+  .gal-bild:nth-child(3){grid-column:span 3;aspect-ratio:4/3}
+  .gal-bild:nth-child(4){grid-column:span 3;aspect-ratio:4/3}
+  .knopf-paar .knopf{flex:none}
+}
+
+/* =========================================================
+   Die Einladung als gerahmte Karte:
+   Vorhang-Kulisse, Blumenbogen, fliegende Tauben
+   ========================================================= */
+.sek.kopf{
+  min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding-top:clamp(96px,20vw,180px);
+}
+.kulisse{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.kulisse-grund{object-fit:cover}
+/* Heller Schleier, damit die Schrift auf dem Foto sicher lesbar bleibt */
+.kulisse-schleier{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    rgba(246,241,231,0) 0%,
+    rgba(246,241,231,0) 52%,
+    rgba(246,241,231,.55) 82%,
+    var(--leinen) 100%);
+}
+/* Voegel bleiben im offenen Himmel und tauchen an den Raendern weich auf */
+.tauben{
+  position:absolute;inset:0;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 84%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 84%,transparent 100%);
+}
+
+/* ---- Voegel ----
+   Im Vorbild sind es winzige Silhouetten weit hinten am Himmel. Genau
+   deshalb wirken sie natuerlich: man sieht keine Details, nur Bewegung.
+   Grosse Voegel im Vordergrund verzeihen keinen Animationsfehler. */
+.vogel{
+  position:absolute;overflow:visible;
+  color:#4a5a6b;                      /* Silhouette gegen den hellen Himmel */
+  will-change:transform;
+}
+.vogel path{
+  fill:none;stroke:currentColor;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;
+}
+/* Die Gleitstellung liegt immer an, die Schlagstellung blendet in Schueben darueber */
+.v-schlag{opacity:0;animation:v-schub 3.8s steps(1,end) infinite}
+@keyframes v-schub{
+  0%{opacity:1} 5%{opacity:0} 11%{opacity:1} 16%{opacity:0}
+  22%{opacity:1} 27%{opacity:0} 33%{opacity:1} 38%{opacity:0}
+  100%{opacity:0}
+}
+
+/* Vier flache, weitraeumige Bahnen. Voegel ziehen, sie huepfen nicht. */
+.vogel.z1{animation:zug1 48s linear infinite}
+.vogel.z2{animation:zug2 62s linear infinite}
+.vogel.z3{animation:zug3 55s linear infinite}
+.vogel.z4{animation:zug4 71s linear infinite}
+
+@keyframes zug1{
+  0%  {transform:translate3d(-14vw,0,0)}
+  30% {transform:translate3d(22vw,-1.2vh,0)}
+  62% {transform:translate3d(60vw,0.6vh,0)}
+  100%{transform:translate3d(114vw,-1.8vh,0)}
+}
+@keyframes zug2{
+  0%  {transform:translate3d(-16vw,0,0)}
+  35% {transform:translate3d(26vw,1.4vh,0)}
+  70% {transform:translate3d(68vw,-0.8vh,0)}
+  100%{transform:translate3d(116vw,1vh,0)}
+}
+@keyframes zug3{
+  0%  {transform:translate3d(112vw,0,0) scaleX(-1)}
+  40% {transform:translate3d(58vw,-1vh,0) scaleX(-1)}
+  100%{transform:translate3d(-14vw,0.8vh,0) scaleX(-1)}
+}
+@keyframes zug4{
+  0%  {transform:translate3d(-12vw,0,0)}
+  45% {transform:translate3d(38vw,-1.6vh,0)}
+  100%{transform:translate3d(115vw,0.4vh,0)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .kulisse-grund,.vogel,.v-schlag{animation:none}
+  .vogel{display:none}
+}
+
+/* ---- Datum nach Vorbild: Monat und Jahr flankieren die grosse Zahl ---- */
+.datum{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(9px,2.6vw,16px);margin:6px 0 4px;
+}
+.datum-strich{flex:1 1 auto;height:1px;background:var(--linie);max-width:64px}
+.datum-monat,.datum-jahr{
+  font-size:var(--t-s);letter-spacing:.24em;text-transform:uppercase;
+  color:var(--tinte-weich);white-space:nowrap;
+}
+.datum-tag{
+  font-size:clamp(46px,15vw,72px);line-height:.9;font-weight:400;
+  letter-spacing:-0.02em;color:var(--tinte);
+  font-variant-numeric:lining-nums;
+}
+.datum-wochentag{
+  margin:0 0 30px;font-size:var(--t-xs);letter-spacing:.3em;
+  text-transform:uppercase;color:var(--tinte-zart);
+}
+.merken{
+  font-family:'Great Vibes',cursive;font-size:var(--t-xl);
+  margin:0 0 14px;color:var(--tinte-weich);
+}
+.kalender-knoepfe{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.kalender-knoepfe .knopf{
+  background:rgba(255,253,248,.72);justify-content:flex-start;padding-left:22px;
+}
+.kalender-knoepfe .knopf:hover{background:rgba(255,253,248,.94)}
+
+/* ---- Der Rahmen verlangt Mitte und mehr Innenabstand ----
+   Linksbuendig lief der Text in die Blumen an der Kante. */
+.sek.kopf{
+  text-align:center;
+  padding-inline:clamp(44px,13vw,88px);
+}
+.sek.kopf .ueberzeile,
+.sek.kopf .kopf-zeile,
+.sek.kopf .datum-wochentag{margin-inline:auto}
+.kalender-knoepfe{align-items:center}
+.kalender-knoepfe .knopf{
+  width:100%;max-width:22rem;justify-content:center;padding-left:22px;
+}
+.datum{margin-inline:auto;max-width:24rem}
+
+/* ---- Sprachwahl und Musik: zwei ruhige Knoepfe oben ---- */
+.knopfleiste{
+  position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;z-index:60;
+  display:flex;align-items:center;gap:8px;
+}
+.sprachwahl,.musikknopf{
+  background:rgba(30,24,18,.42);color:#f0e5d2;
+  border:1px solid rgba(240,229,210,.28);border-radius:999px;
+  backdrop-filter:blur(6px);cursor:pointer;
+  font-family:Arial,Helvetica,sans-serif;
+  transition:background .22s var(--ease-out-quart),color .22s var(--ease-out-quart);
+}
+.sprachwahl{
+  padding:6px 9px;display:flex;align-items:center;gap:7px;
+}
+.flagge{
+  display:block;width:23px;height:23px;line-height:0;
+  opacity:.38;filter:saturate(.5);
+  transition:opacity .25s var(--ease-out-quart),filter .25s var(--ease-out-quart),
+             transform .25s var(--ease-out-quart);
+}
+.flagge svg{width:100%;height:100%;display:block}
+.flagge.aktiv{opacity:1;filter:none;transform:scale(1.09)}
+.sprachwahl:hover .flagge:not(.aktiv){opacity:.62}
+.sprachwahl:hover,.musikknopf:hover{background:rgba(30,24,18,.66)}
+.musikknopf{
+  width:38px;height:38px;padding:0;
+  display:grid;place-items:center;
+}
+/* Ohne das ueberstimmt display:grid das hidden-Attribut und ein toter
+   Schalter waere sichtbar, obwohl keine Musikdatei vorliegt. */
+.musikknopf[hidden]{display:none}
+.musikknopf svg{width:19px;height:19px}
+.musikknopf .mk-strich{opacity:1}
+.musikknopf.laeuft .mk-strich{opacity:0}
+.musikknopf.laeuft .mk-note{animation:mk-puls 2.4s ease-in-out infinite}
+@keyframes mk-puls{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* Auf der hellen Karte umschalten, sonst verschwinden die Knoepfe */
+body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
+  background:rgba(255,253,248,.82);color:var(--tinte);
+  border-color:rgba(47,41,33,.14);
+}
+@media (prefers-reduced-motion:reduce){
+  .musikknopf.laeuft .mk-note{animation:none}
+}
+
+/* =========================================================
+   Bewegung, die beim Scrollen entsteht
+   ========================================================= */
+
+/* ---- Kulisse liegt tiefer als der Text und zieht langsamer mit ---- */
+.kulisse-grund{will-change:transform}
+
+/* ---- Zeitleiste: die Linie waechst mit dem Lesen ---- */
+.zeitleiste{position:relative}
+.zeitleiste::before{
+  content:'';position:absolute;left:calc(4.4rem + 8px);top:8px;bottom:8px;width:1px;
+  background:var(--salbei-tief);opacity:.28;
+  transform:scaleY(var(--zl-fortschritt,0));transform-origin:top;
+  transition:transform .18s linear;
+}
+.zl-punkt{position:relative}
+.zl-zeit{position:relative;z-index:1}
+
+/* ---- Countdown: die Ziffern rollen beim Wechsel ---- */
+.cd-zahl{display:inline-block;position:relative;overflow:hidden}
+.cd-zahl.rollt{animation:ziffer-roll .42s var(--ease-out-quart)}
+@keyframes ziffer-roll{
+  0%  {transform:translateY(-38%);opacity:.35}
+  60% {opacity:1}
+  100%{transform:translateY(0);opacity:1}
+}
+
+/* ---- Galerie antippbar ---- */
+.gal-bild{cursor:zoom-in}
+.gal-bild::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,14,8,0) 62%,rgba(20,14,8,.2));
+  opacity:0;transition:opacity .45s var(--ease-out-quart);
+}
+.gal-bild:hover::after{opacity:1}
+
+.lupe{
+  position:fixed;inset:0;z-index:200;display:none;
+  background:rgba(24,19,13,.94);
+  align-items:center;justify-content:center;
+  opacity:0;transition:opacity .32s var(--ease-out-quart);
+}
+.lupe.auf{display:flex}
+.lupe.sichtbar{opacity:1}
+.lupe img{
+  max-width:94vw;max-height:82svh;object-fit:contain;
+  transform:scale(.94);transition:transform .38s var(--ease-out-expo);
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+}
+.lupe.sichtbar img{transform:scale(1)}
+.lupe-zu{
+  position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;z-index:2;
+  width:42px;height:42px;border-radius:999px;cursor:pointer;
+  background:rgba(255,253,248,.14);border:1px solid rgba(255,253,248,.3);
+  color:#f4efe4;display:grid;place-items:center;
+}
+.lupe-zu svg{width:18px;height:18px}
+.lupe-text{
+  position:absolute;left:0;right:0;bottom:max(22px,env(safe-area-inset-bottom));
+  text-align:center;color:#cbbda4;font-size:var(--t-s);padding:0 26px;
+}
+.lupe-blaettern{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
+  width:46px;height:46px;border-radius:999px;cursor:pointer;
+  background:rgba(255,253,248,.12);border:1px solid rgba(255,253,248,.26);
+  color:#f4efe4;display:grid;place-items:center;
+}
+.lupe-blaettern svg{width:20px;height:20px}
+.lupe-zurueck{left:12px}
+.lupe-vor{right:12px}
+
+@media (prefers-reduced-motion:reduce){
+  .cd-zahl.rollt{animation:none}
+  .zeitleiste::before{transform:scaleY(1)}
+  .lupe img{transform:none}
+}
+
+/* ---- Blütenregen nach der Zusage ---- */
+.regen{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden}
+.regen span{
+  position:absolute;top:-8vh;border-radius:60% 40% 55% 45%;
+  opacity:.9;animation:regen-fall linear forwards;
+}
+@keyframes regen-fall{
+  from{transform:translate3d(0,-10vh,0) rotate(0)}
+  to  {transform:translate3d(var(--drift,0),112vh,0) rotate(var(--dreh,180deg));opacity:.15}
+}
+
+/* =========================================================
+   Bildmomente: Stellen, an denen die Seite einmal aufreisst
+   ========================================================= */
+.grossbild{
+  position:relative;overflow:hidden;
+  min-height:clamp(360px,62svh,560px);
+  display:grid;place-items:center;
+  padding:clamp(48px,9vw,80px) clamp(26px,7vw,44px);
+  isolation:isolate;
+}
+.gb-bild{object-fit:cover;object-position:center 46%;z-index:-2}
+.gb-schleier{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,
+    rgba(24,18,12,.52) 0%, rgba(24,18,12,.30) 38%,
+    rgba(24,18,12,.42) 72%, rgba(24,18,12,.66) 100%);
+}
+.gb-text{max-width:26rem;text-align:center;color:#fbf6ec}
+.gb-gross{
+  font-family:'Great Vibes',cursive;
+  font-size:clamp(30px,8.6vw,50px);line-height:1.22;
+  margin:0 0 16px;text-shadow:0 3px 26px rgba(16,11,6,.66);
+}
+.ab-gross{
+  font-family:'Great Vibes',cursive;
+  font-size:clamp(38px,12vw,66px);line-height:1.1;
+  margin:0 0 14px;text-shadow:0 3px 26px rgba(16,11,6,.66);
+}
+.gb-klein{
+  margin:0;font-size:clamp(14px,3.9vw,17px);line-height:1.65;
+  color:#e4d9c6;text-shadow:0 2px 16px rgba(16,11,6,.6);
+}
+
+/* ---- Countdown auf den Lichterketten ---- */
+.countdown{position:relative;overflow:hidden;isolation:isolate}
+.cd-grund{object-fit:cover;z-index:-2}
+.cd-schleier{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(20,15,10,.84),rgba(20,15,10,.76) 46%,rgba(20,15,10,.88));
+}
+.countdown .cd-zahl{text-shadow:0 2px 6px rgba(12,8,4,.9),0 4px 26px rgba(12,8,4,.75)}
+.countdown .cd-label,.countdown .cd-fuss{color:#c9b795;text-shadow:0 2px 12px rgba(12,8,4,.7)}
+
+/* ---- Die Location als Bild, darunter die Lageskizze ---- */
+.sek.ort{position:relative}
+.ort-bild{
+  margin:0 0 26px;overflow:hidden;
+  aspect-ratio:4/3;position:relative;
+}
+.ort-bild img{object-fit:cover;object-position:center 44%}
+
+@media (prefers-reduced-motion:reduce){
+  .gb-bild,.cd-grund{transform:scale(1.06)}
+}
+
+/* =========================================================
+   Tablet und Laptop
+   Die Karte lief bis hierher in einer Handy-Spalte von 34rem,
+   auf einem 1440er Laptop waren das 38 Prozent der Breite. Ab hier
+   bekommt sie mehr Raum, groessere Schrift und Abschnitte, die
+   die Breite auch nutzen.
+   ========================================================= */
+@media (min-width:700px){
+  /* Auf breiten Schirmen steht das Bild neben den Angaben */
+  .ort-bild{aspect-ratio:3/2;margin-bottom:0}
+
+  :root{
+    --t-m:1.12rem; --t-l:1.42rem; --t-xl:1.8rem;
+    --t-2xl:2.4rem; --t-3xl:3.1rem;
+  }
+  .sek{max-width:40rem;padding-inline:clamp(34px,5vw,56px)}
+  .sek.ablauf > *,.sek.familien > *,.sek.geschenk > *{max-width:40rem}
+
+  /* Ort: Angaben und Skizze nebeneinander */
+  .sek.ort{max-width:52rem}
+  .sek.ort > *{max-width:none}
+  .ort-raster{
+    display:grid;grid-template-columns:1fr 1.15fr;
+    gap:clamp(26px,4vw,44px);align-items:start;
+  }
+  .sek.ort .ort-bild{grid-column:1 / -1}
+  .kartenbild{margin-top:0}
+  .knopf-paar{margin-top:20px}
+
+  /* Familien nebeneinander statt untereinander */
+  .fam-liste{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:0 clamp(20px,3vw,34px);
+  }
+  .fam-zeile{border-top:1px solid var(--linie);border-bottom:0}
+  .sek.familien .fam-zeile{border-color:#eed6c8}
+
+  .dc-farben{gap:26px}
+  .grossbild{min-height:clamp(440px,58svh,620px)}
+  .gb-text{max-width:34rem}
+  .kalender-knoepfe{flex-direction:row;justify-content:center}
+  .kalender-knoepfe .knopf{max-width:18rem}
+}
+
+@media (min-width:1100px){
+  :root{--t-2xl:2.7rem; --t-3xl:3.6rem}
+  .sek{max-width:44rem}
+  .sek.ort{max-width:58rem}
+  .sek.ablauf > *,.sek.familien > *,.sek.geschenk > *{max-width:44rem}
+  .gal-band{max-width:70rem}
+  .sek.kopf{max-width:none;padding-inline:clamp(60px,8vw,120px)}
+  /* Der Rahmen ist hochformatig - auf breiten Schirmen mittig halten,
+     sonst zieht er sich zu einem Streifen auseinander */
+  .kulisse-grund{object-fit:cover;object-position:center}
+  .sek.kopf .paarnamen{font-size:clamp(3.4rem,6vw,5rem)}
+}
+
+/* ---- Zeitleiste: jeder Punkt tritt einzeln ein ---- */
+.zl-punkt{
+  opacity:0;transform:translateY(16px);
+  transition:opacity .62s var(--ease-out-expo),transform .62s var(--ease-out-expo);
+}
+.zl-punkt.da{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .zl-punkt{opacity:1;transform:none}
+}
+
+@media (min-width:1400px){
+  :root{--t-m:1.16rem; --t-l:1.5rem}
+  .sek{max-width:46rem}
+  .sek.ablauf > *,.sek.familien > *,.sek.geschenk > *{max-width:46rem}
+  /* Auf breiten Schirmen wirkten die Bildflaechen wie schmale Baender */
+  .grossbild{min-height:min(72svh,720px)}
+  .countdown{padding-block:clamp(84px,9vh,132px)}
+  .gb-text{max-width:38rem}
+}
+
+
+/* =========================================================
+   Parallaxe
+   Ein Bild wirkt nur dann hinter dem Fenster liegend, wenn es
+   langsamer zieht als die Seite - und wenn dabei nie ein Rand
+   auftaucht. Deshalb ist jedes Bild oben und unten um genau den
+   Weg groesser, den es zuruecklegt: --px-weg.
+   ========================================================= */
+[data-px]{
+  --px-weg:6%;
+  position:absolute;left:0;width:100%;
+  top:calc(-1 * var(--px-weg));
+  height:calc(100% + 2 * var(--px-weg));
+  will-change:transform;
+  backface-visibility:hidden;      /* verhindert Flimmern beim Bewegen */
+}
+.gal-bild,.ort-bild,.grossbild,.countdown,.kulisse{overflow:hidden}
+
+/* --px-weg wird vom Skript gesetzt, damit Ueberstand und zurueckgelegter
+   Weg zwingend denselben Wert haben. Der Startwert hier greift nur, falls
+   kein Javascript laeuft. */
+
+@media (prefers-reduced-motion:reduce){
+  [data-px]{
+    top:0;height:100%;transform:none !important;
+  }
+}
+
+/* =========================================================
+   Ablauf als Reihe statt als Liste
+   Sechs Punkte untereinander sind eine Liste; nebeneinander sind
+   sie ein Tagesverlauf, den man in einem Blick erfasst.
+   ========================================================= */
+.sym{width:100%;height:100%;display:block}
+.sym path{
+  fill:none;stroke:currentColor;stroke-width:1.25;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+
+.zeitleiste{
+  list-style:none;margin:0;padding:0;position:relative;
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:clamp(26px,6vw,34px) clamp(14px,4vw,22px);
+}
+.zl-punkt{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:0;border:0;position:relative;
+}
+.zl-kopf{
+  width:clamp(38px,10vw,46px);height:clamp(38px,10vw,46px);
+  display:grid;place-items:center;margin-bottom:11px;
+  color:var(--salbei-tief);
+  border:1px solid #cfdac8;border-radius:50%;
+  background:rgba(255,253,248,.55);
+}
+.zl-sym{width:56%;height:56%}
+.zl-zeit{
+  font-variant-numeric:tabular-nums;font-weight:700;
+  font-size:var(--t-s);color:var(--salbei-tief);letter-spacing:.06em;
+}
+.zl-titel{
+  font-size:var(--t-m);font-weight:700;margin:5px 0 0;line-height:1.25;
+  text-wrap:balance;
+}
+.zl-ort{margin:3px 0 0;font-size:var(--t-xs);color:var(--tinte-weich)}
+.zl-notiz{
+  margin:6px 0 0;font-size:var(--t-xs);color:var(--tinte-zart);
+  border:0;padding:0;max-width:24ch;
+}
+
+/* Die durchgehende Linie verbindet die Symbole erst, wenn sie
+   auch wirklich in einer Reihe stehen. */
+.zeitleiste::before{display:none}
+
+@media (min-width:700px){
+  .zeitleiste{
+    grid-template-columns:repeat(6,1fr);
+    gap:0 clamp(8px,1.6vw,16px);
+  }
+  .zeitleiste::before{
+    display:block;content:'';position:absolute;
+    left:8%;right:8%;top:calc(clamp(38px,10vw,46px) / 2);
+    height:1px;background:var(--salbei-tief);opacity:.3;
+    transform:scaleX(var(--zl-fortschritt,0));transform-origin:left;
+    transition:transform .2s linear;
+  }
+  .zl-kopf{position:relative;z-index:1}
+}
+
+/* ---- Gut zu wissen ---- */
+.sek.wissen{padding-block:clamp(50px,8vw,74px)}
+.wi-liste{display:grid;gap:clamp(24px,5vw,30px)}
+.wi-punkt{display:block}
+.wi-sym{
+  width:26px;height:26px;color:var(--akzent);margin-bottom:10px;display:block;
+}
+.wi-titel{
+  font-size:var(--t-xs);letter-spacing:.18em;text-transform:uppercase;
+  margin:0 0 7px;font-weight:700;color:var(--tinte);
+}
+.wi-text{margin:0;font-size:var(--t-s);line-height:1.65;color:var(--tinte-weich);max-width:42ch}
+
+@media (min-width:700px){
+  .wi-liste{grid-template-columns:repeat(3,1fr);gap:clamp(24px,3.4vw,40px)}
+}
+
+/* ---- Zusage als zwei Knoepfe ---- */
+.wahl-reihe{display:grid;gap:11px}
+.zusage-knopf{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  font-family:inherit;font-size:var(--t-m);
+  padding:16px 20px;border-radius:2px;cursor:pointer;
+  background:transparent;border:1px solid var(--linie);color:var(--tinte);
+  transition:background .24s var(--ease-out-quart),border-color .24s var(--ease-out-quart),
+             color .24s var(--ease-out-quart);
+}
+.zusage-knopf:hover{border-color:var(--akzent)}
+.zk-herz{width:16px;height:16px;fill:currentColor;flex:none;opacity:.55}
+.zusage-knopf.ja.gewaehlt{
+  background:var(--salbei-tief);border-color:var(--salbei-tief);color:#f6f2e8;
+}
+.zusage-knopf.ja.gewaehlt .zk-herz{opacity:1}
+.zusage-knopf.nein.gewaehlt{
+  background:var(--leinen-tief);border-color:var(--tinte-zart);color:var(--tinte-weich);
+}
+@media (min-width:560px){
+  .wahl-reihe{grid-template-columns:1fr 1fr;gap:12px}
+}
+
+/* ---- Monogramm ---- */
+.monogramm{
+  font-family:'Cormorant',Georgia,serif;
+  font-size:var(--t-l);letter-spacing:.28em;
+  color:var(--akzent);margin:0 0 16px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.monogramm::before,.monogramm::after{
+  content:'';width:clamp(22px,7vw,40px);height:1px;background:var(--akzent);opacity:.45;
+}
+
+/* =========================================================
+   Zwei Bloecke nebeneinander
+   Auf dem Handy bleiben sie untereinander - erst ab 900px ist
+   genug Platz, dass zwei Spalten nicht zu Textkolonnen werden.
+   ========================================================= */
+.doppel{display:block}
+
+@media (min-width:900px){
+  .doppel{
+    display:grid;grid-template-columns:1fr 1.25fr;align-items:stretch;
+  }
+  .doppel > .sek{max-width:none;width:100%;padding-inline:clamp(34px,4vw,58px)}
+  .doppel > .sek > *{max-width:34rem;margin-inline:auto}
+  /* Der Ablauf braucht mehr Breite als das Anschreiben */
+  .doppel > .sek.ablauf > *,
+  .doppel > .sek.dresscode > *{max-width:38rem}
+  .doppel .sek.anrede{display:flex;flex-direction:column;justify-content:center}
+  .doppel .sek.ort{max-width:none}
+  .doppel .sek.ort .ort-raster{grid-template-columns:1fr}
+  .doppel .sek.ort .ort-bild{aspect-ratio:4/3}
+  /* In der Spalte ist kein Platz fuer sechs Punkte nebeneinander */
+  .doppel .zeitleiste{grid-template-columns:repeat(3,1fr);gap:26px 14px}
+  .doppel .zeitleiste::before{display:none}
+}
