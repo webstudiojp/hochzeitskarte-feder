@@ -11,7 +11,7 @@ window.HOCHZEIT = {
 
   // Wird von bin/veroeffentlichen.sh gesetzt und an alle Bilder gehaengt,
   // damit Browser nach einer Aenderung nicht die alte Fassung zeigen.
-  version: '202608211334',
+  version: '202608211354',
 
   /* ---------- Sprachen ---------- */
   standardsprache: 'de',
@@ -87,10 +87,10 @@ window.HOCHZEIT = {
 
   /* ---------- Dresscode-Farben (Namen uebersetzt) ---------- */
   farben: [
-    { hex: '#6d7a63', schluessel: 'salbei' },
+    { hex: '#6a7546', schluessel: 'olive' },
+    { hex: '#b5623c', schluessel: 'terrakotta' },
     { hex: '#8a6f5c', schluessel: 'nuss' },
-    { hex: '#3f4a55', schluessel: 'rauchblau' },
-    { hex: '#a8894e', schluessel: 'altgold' },
+    { hex: '#d8c9a6', schluessel: 'sand' },
   ],
 
   /* =========================================================
@@ -169,7 +169,7 @@ window.HOCHZEIT = {
       dresscodeKopf: 'Festlich, gerne lang',
       dresscodeText: 'Die Trauung ist draußen in der Orangerie – flache Absätze sind auf dem Kiesweg '
                    + 'die klügere Wahl. Weiß bleibt der Braut vorbehalten.',
-      farbnamen: { salbei: 'Salbei', nuss: 'Nussbraun', rauchblau: 'Rauchblau', altgold: 'Altgold' },
+      farbnamen: { olive: 'Olive', terrakotta: 'Terrakotta', nuss: 'Nussbraun', sand: 'Sand' },
 
       galerieTitel: 'Wir zwei',
       bildtexte: {
@@ -290,7 +290,7 @@ window.HOCHZEIT = {
       dresscodeKopf: 'Şık, tercihen uzun',
       dresscodeText: 'Nikâh Orangerie’nin bahçesinde yapılacak – çakıl yolda alçak topuk daha rahat olur. '
                    + 'Beyaz rengi geline bırakalım.',
-      farbnamen: { salbei: 'Adaçayı', nuss: 'Kahve', rauchblau: 'Duman mavisi', altgold: 'Eski altın' },
+      farbnamen: { olive: 'Zeytin', terrakotta: 'Kiremit', nuss: 'Kahve', sand: 'Kum' },
 
       galerieTitel: 'Biz ikimiz',
       bildtexte: {

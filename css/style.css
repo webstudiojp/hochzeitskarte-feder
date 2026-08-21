@@ -13,16 +13,16 @@
   unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;}
 
 :root{
-  --creme:#fff6e8;
-  --tinte:#3a332a;
-  --gold:#c8a96a;
-  --papier:#f7f1e6;
+  --creme:#fff4e2;
+  --tinte:#3b342a;
+  --gold:#b5623c;        /* Terrakotta - der Akzent der Karte */
+  --papier:#f7f2e6;
 }
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  background:#2a2118;
+  background:#33291b;
   color:var(--tinte);
   font-family:'Cormorant',Georgia,serif;
   -webkit-font-smoothing:antialiased;
@@ -34,14 +34,14 @@ body.locked{overflow:hidden}
 .screen{
   position:fixed;inset:0;z-index:50;
   display:grid;place-items:center;
-  background:radial-gradient(120% 90% at 50% 20%,#5d5140 0%,#2a2118 70%);
+  background:radial-gradient(120% 90% at 50% 20%,#5d5140 0%,#33291b 70%);
   transition:opacity .6s ease,visibility .6s;
 }
 .screen.gone{opacity:0;visibility:hidden;pointer-events:none}
 .env-inner{text-align:center;padding:24px}
 .env-kicker{
   font-size:clamp(15px,4vw,19px);letter-spacing:.22em;text-transform:uppercase;
-  color:#d9c8a8;margin:0 0 34px;font-weight:300;
+  color:#e0bfa6;margin:0 0 34px;font-weight:300;
   opacity:0;animation:fadeUp .9s .2s ease forwards;
 }
 .envelope{
@@ -54,14 +54,14 @@ body.locked{overflow:hidden}
 .envelope:active{transform:translateY(-2px) scale(.99)}
 .envelope:focus-visible{outline:2px solid var(--gold);outline-offset:14px;border-radius:8px}
 .env-svg{width:100%;height:auto;display:block;filter:drop-shadow(0 26px 40px rgba(0,0,0,.45))}
-.env-body{fill:var(--papier)}
-.env-flap-back{fill:none;stroke:#e0d4bf;stroke-width:1.5}
-.env-seal-ring{fill:none;stroke:var(--gold);stroke-width:2;opacity:.75}
-.env-flap-shape{fill:#efe6d5;stroke:#e0d4bf;stroke-width:1}
+.env-body{fill:#efe4d0}
+.env-flap-back{fill:none;stroke:#e2d3ba;stroke-width:1.5}
+.env-seal-ring{fill:none;stroke:var(--gold);stroke-width:1.8;opacity:.6}
+.env-flap-shape{fill:#f6efe0;stroke:#d9c8a8;stroke-width:1}
 #env-flap{transform-origin:100px 24px;transition:transform .85s cubic-bezier(.5,0,.2,1)}
 #env-flap.open{transform:rotateX(180deg) translateY(-2px)}
 .env-hint{
-  margin:30px 0 0;font-size:15px;letter-spacing:.14em;color:#a3937a;
+  margin:30px 0 0;font-size:15px;letter-spacing:.14em;color:#a68b74;
   opacity:0;animation:fadeUp .9s 1.1s ease forwards,pulse 2.6s 2s ease-in-out infinite;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -69,7 +69,7 @@ body.locked{overflow:hidden}
 
 /* ---------- Hero ---------- */
 .hero{
-  position:relative;width:100%;overflow:hidden;background:#2a2118;
+  position:relative;width:100%;overflow:hidden;background:#33291b;
   height:100svh;                 /* Rueckfall */
   height:100dvh;                 /* besser, aber auf iOS beim ersten Laden unzuverlaessig */
   height:var(--sicht,100dvh);    /* massgeblich: in JS gemessene Viewporthoehe */
@@ -78,7 +78,7 @@ body.locked{overflow:hidden}
 
 .skip{
   position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;z-index:20;
-  background:rgba(30,24,18,.42);color:#f0e5d2;border:1px solid rgba(240,229,210,.28);
+  background:rgba(30,24,18,.42);color:#f1e5cf;border:1px solid rgba(240,229,210,.28);
   border-radius:999px;padding:9px 18px;font-family:inherit;font-size:14px;
   letter-spacing:.1em;cursor:pointer;backdrop-filter:blur(6px);
   opacity:0;animation:fadeUp .6s .4s ease forwards;
@@ -124,8 +124,8 @@ body.locked{overflow:hidden}
 .env-karte{
   position:absolute;left:6%;right:6%;bottom:14%;
   z-index:1;                       /* steckt zunaechst hinter der Vorderseite */
-  background:linear-gradient(168deg,#fffdf8,#f4ecdd);
-  border:1px solid rgba(200,169,106,.34);
+  background:linear-gradient(168deg,#fffdf6,#f5ecd9);
+  border:1px solid rgba(181,98,60,.3);
   padding:16px 12px;text-align:center;
   box-shadow:0 10px 26px rgba(20,14,8,.24);
   display:flex;flex-direction:column;align-items:center;gap:7px;
@@ -134,9 +134,9 @@ body.locked{overflow:hidden}
 }
 .ek-namen{
   font-family:'Great Vibes',cursive;font-size:clamp(19px,5.4vw,26px);
-  color:#3a332a;line-height:1.1;white-space:nowrap;
+  color:#3b342a;line-height:1.1;white-space:nowrap;
 }
-.ek-linie{width:38%;height:1px;background:rgba(200,169,106,.5)}
+.ek-linie{width:38%;height:1px;background:rgba(181,98,60,.45)}
 
 /* Ablauf: Klappe auf, Karte steigt heraus, dann nach vorn */
 #envelope.offen .env-karte{
@@ -148,7 +148,7 @@ body.locked{overflow:hidden}
   55%  {opacity:1;transform:translateY(-62%) scale(1.04);z-index:3}
   100% {opacity:1;transform:translateY(-88%) scale(1.14) rotate(-1.4deg);z-index:3}
 }
-.env-front{fill:#f2e9d8;stroke:#e0d4bf;stroke-width:1}
+.env-front{fill:#e6d7bc;stroke:#d3c1a0;stroke-width:1}
 #envelope.offen .env-svg{
   animation:umschlag-sinkt 1.4s .55s cubic-bezier(.4,0,.2,1) forwards;
 }
@@ -225,3 +225,4 @@ body.locked{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   #kerze,#staub circle{animation:none}
 }
+.env-seal-herz{fill:var(--gold);opacity:.72}

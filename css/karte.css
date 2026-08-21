@@ -13,21 +13,21 @@
 :root{
   /* Farbwelt: Abendlicht auf Asphalt, Kerzenwachs, Leinen, Eukalyptus.
      Bewusst nicht Rosé/Glanzgold — das waere der Kategorie-Reflex. */
-  --nacht:        #221c16;
-  --nacht-weich:  #33291f;
-  --leinen:       #f4efe4;
-  --leinen-tief:  #ece4d5;
-  --tinte:        #2f2921;
-  --tinte-weich:  #6a6053;
-  --tinte-zart:   #948875;
-  --akzent:       #a8894e;
-  --linie:        #d9cfba;
+  --nacht:        #2a231b;
+  --nacht-weich:  #3b3226;
+  --leinen:       #f6f1e7;
+  --leinen-tief:  #ede4d4;
+  --tinte:        #2f2a22;
+  --tinte-weich:  #6b6252;
+  --tinte-zart:   #988d78;
+  --akzent:       #b5623c;
+  --linie:        #ddd2bd;
 
   /* Farbfamilien fuer die Abschnitte - bewusst mehrfarbig statt einfarbig */
-  --salbei:       #e6ede1;  --salbei-tief:  #5f7a58;
-  --rose:         #f9e8de;  --rose-tief:    #b8735a;
-  --himmel:       #e3edf2;  --himmel-tief:  #456a83;
-  --sonne:        #f8eed6;  --sonne-tief:   #a8894e;
+  --olive:  #e3e0cb;  --olive-tief:  #6a7546;   /* Der Tag */
+  --lehm:   #f2ddcc;  --lehm-tief:   #9e4f31;   /* Familien */
+  --rauch:  #dfe3d5;  --rauch-tief:  #5c6b4a;   /* Album */
+  --sand:   #f3e7d0;  --sand-tief:   #a6763a;   /* Geschenke */
 
   /* Type-Scale, Ratio 1.25 */
   --t-xs:  0.78rem;
@@ -83,24 +83,24 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 .sek.anrede     {padding-top:clamp(20px,4vw,30px);padding-bottom:clamp(64px,11vw,104px)}
 .sek.ablauf{
   padding-block:clamp(68px,12vw,112px);
-  background:var(--salbei);max-width:none;
+  background:var(--olive);max-width:none;
 }
 .sek.ablauf > *{max-width:34rem;margin-inline:auto}
-.sek.ablauf .ueberzeile,.sek.ablauf .zl-zeit{color:var(--salbei-tief)}
+.sek.ablauf .ueberzeile,.sek.ablauf .zl-zeit{color:var(--olive-tief)}
 .sek.familien{
   padding-block:clamp(56px,9vw,84px);
-  background:var(--rose);max-width:none;
+  background:var(--lehm);max-width:none;
 }
 .sek.familien > *{max-width:34rem;margin-inline:auto}
-.sek.familien .fam-zeile{border-color:#eed6c8}
-.sek.familien .fam-rolle{color:var(--rose-tief)}
+.sek.familien .fam-zeile{border-color:#ecd5c2}
+.sek.familien .fam-rolle{color:var(--lehm-tief)}
 .sek.dresscode  {padding-block:clamp(48px,8vw,72px)}
 .sek.geschenk{
   padding-block:clamp(52px,8vw,76px);
-  background:var(--sonne);max-width:none;
+  background:var(--sand);max-width:none;
 }
 .sek.geschenk > *{max-width:34rem;margin-inline:auto}
-.sek.geschenk .iban-zeile{border-color:#e6d5b0}
+.sek.geschenk .iban-zeile{border-color:#e8d2a8}
 .sek.teilen     {padding-block:clamp(36px,6vw,52px);text-align:center}
 
 /* ---------- Typografie ---------- */
@@ -108,7 +108,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   margin:0 0 18px;font-size:var(--t-xs);letter-spacing:.28em;text-transform:uppercase;
   color:var(--akzent);font-weight:500;
 }
-.ueberzeile.hell{color:#c6a86f}
+.ueberzeile.hell{color:#d08a63}
 .sek-titel{
   font-family:Arial,Helvetica,sans-serif;font-weight:700;
   font-size:var(--t-2xl);letter-spacing:-0.02em;line-height:1.1;
@@ -203,7 +203,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 }
 .cd-label{
   font-size:clamp(9px,2.4vw,11px);letter-spacing:.16em;text-transform:uppercase;
-  color:#c9b795;white-space:nowrap;
+  color:#cdb48d;white-space:nowrap;
 }
 .cd-fuss{
   margin:30px 0 0;font-size:var(--t-s);color:#a4947c;
@@ -252,14 +252,14 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 .dc-name{font-size:var(--t-xs);letter-spacing:.1em;color:var(--tinte-weich)}
 
 /* ---------- Galerie: volle Breite, ungleiche Groessen ---------- */
-.galerie{background:var(--himmel)}
+.galerie{background:var(--rauch)}
 .gal-band{
   display:grid;gap:10px;margin-top:30px;
   grid-template-columns:repeat(2,1fr);
   max-width:62rem;margin-inline:auto;
 }
 .gal-bild{
-  background:#ddd3bf;
+  background:#ded2ba;
   --g1:#d9c7b0; --g2:#c2b295;
   width:100%;margin:0;overflow:hidden;position:relative;
 }
@@ -290,11 +290,11 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   background:linear-gradient(142deg,var(--g1),var(--g2));
   animation:wandern 24s var(--ease-in-out-sanft, ease-in-out) infinite alternate;
 }
-.gal-bild:nth-child(1){--g1:#e6cdb4;--g2:#c2a07f}
+.gal-bild:nth-child(1){--g1:#e9c9a9;--g2:#c2a07f}
 .gal-bild:nth-child(2){--g1:#cfe0d2;--g2:#8fae95}
-.gal-bild:nth-child(3){--g1:#f2d7ca;--g2:#cf9d84}
+.gal-bild:nth-child(3){--g1:#f0d3c0;--g2:#cf9d84}
 .gal-bild:nth-child(4){--g1:#cfdde7;--g2:#8ba7bb}
-.gal-bild:nth-child(5){--g1:#e9dcc0;--g2:#c4ab7d}
+.gal-bild:nth-child(5){--g1:#ebdaba;--g2:#c4ab7d}
 .gal-bild:nth-child(2)::before{animation-duration:29s;animation-delay:-6s}
 .gal-bild:nth-child(3)::before{animation-duration:26s;animation-delay:-12s}
 .gal-bild:nth-child(4)::before{animation-duration:31s;animation-delay:-3s}
@@ -358,9 +358,9 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 }
 .einwilligung input{accent-color:var(--akzent);width:17px;height:17px;flex:none;margin-top:3px}
 .feld-fehler{
-  margin:8px 0 0;font-size:var(--t-s);color:#8f4b3c;
+  margin:8px 0 0;font-size:var(--t-s);color:#8c3f2c;
 }
-.feld input[aria-invalid=true],.feld textarea[aria-invalid=true]{border-bottom-color:#8f4b3c}
+.feld input[aria-invalid=true],.feld textarea[aria-invalid=true]{border-bottom-color:#8c3f2c}
 .hinweis-kasten{
   margin:18px 0 0;padding:14px 16px;font-size:var(--t-s);line-height:1.55;
   background:var(--leinen-tief);border:1px solid var(--linie);color:var(--tinte-weich);
@@ -410,15 +410,36 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   padding-top:clamp(96px,20vw,180px);
 }
 .kulisse{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-.kulisse-grund{object-fit:cover}
+/* Beide Ebenen sitzen immer voll in der Breite - dadurch bleiben die
+   seitlichen Blueten sichtbar, egal wie schmal das Geraet ist. */
+.kulisse-oben,.kulisse-fuss{
+  position:absolute;left:0;right:0;display:block;
+  background-repeat:no-repeat;background-size:100% auto;
+  pointer-events:none;
+}
+.kulisse-oben{
+  /* Der weiche Auslauf steckt als Alpha im Bild selbst - dadurch bleibt
+     die Kante weich, egal wie hoch das Element durch die Parallaxe
+     gerade ist. Eine CSS-Maske richtet sich nach der Elementhoehe und
+     traefe das Bildende nicht. */
+  top:0;
+  background-image:url("../assets/img/rahmen-oben.webp");
+  background-position:top center;
+  will-change:transform;
+}
+.kulisse-fuss{
+  bottom:0;height:42%;
+  background-image:url("../assets/img/rahmen-fuss.webp");
+  background-position:bottom center;
+}
 /* Heller Schleier, damit die Schrift auf dem Foto sicher lesbar bleibt */
 .kulisse-schleier{
   position:absolute;inset:0;
   background:linear-gradient(180deg,
     rgba(246,241,231,0) 0%,
-    rgba(246,241,231,0) 52%,
-    rgba(246,241,231,.55) 82%,
-    var(--leinen) 100%);
+    rgba(246,241,231,0) 62%,
+    rgba(246,241,231,.34) 86%,
+    rgba(246,241,231,.72) 100%);
 }
 /* Voegel bleiben im offenen Himmel und tauchen an den Raendern weich auf */
 .tauben{
@@ -488,7 +509,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .kulisse-grund,.vogel,.vogel-bild{animation:none}
+  .kulisse-oben,.vogel,.vogel-bild{animation:none}
   .vogel{display:none}
 }
 
@@ -542,7 +563,7 @@ html{scrollbar-color:var(--linie) var(--leinen)}
   display:flex;align-items:center;gap:8px;
 }
 .sprachwahl,.musikknopf{
-  background:rgba(30,24,18,.42);color:#f0e5d2;
+  background:rgba(30,24,18,.42);color:#f1e5cf;
   border:1px solid rgba(240,229,210,.28);border-radius:999px;
   backdrop-filter:blur(6px);cursor:pointer;
   font-family:Arial,Helvetica,sans-serif;
@@ -588,13 +609,13 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
    ========================================================= */
 
 /* ---- Kulisse liegt tiefer als der Text und zieht langsamer mit ---- */
-.kulisse-grund{will-change:transform}
+
 
 /* ---- Zeitleiste: die Linie waechst mit dem Lesen ---- */
 .zeitleiste{position:relative}
 .zeitleiste::before{
   content:'';position:absolute;left:calc(4.4rem + 8px);top:8px;bottom:8px;width:1px;
-  background:var(--salbei-tief);opacity:.28;
+  background:var(--olive-tief);opacity:.28;
   transform:scaleY(var(--zl-fortschritt,0));transform-origin:top;
   transition:transform .18s linear;
 }
@@ -637,7 +658,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;z-index:2;
   width:42px;height:42px;border-radius:999px;cursor:pointer;
   background:rgba(255,253,248,.14);border:1px solid rgba(255,253,248,.3);
-  color:#f4efe4;display:grid;place-items:center;
+  color:#f6f1e7;display:grid;place-items:center;
 }
 .lupe-zu svg{width:18px;height:18px}
 .lupe-text{
@@ -648,7 +669,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   position:absolute;top:50%;transform:translateY(-50%);z-index:2;
   width:46px;height:46px;border-radius:999px;cursor:pointer;
   background:rgba(255,253,248,.12);border:1px solid rgba(255,253,248,.26);
-  color:#f4efe4;display:grid;place-items:center;
+  color:#f6f1e7;display:grid;place-items:center;
 }
 .lupe-blaettern svg{width:20px;height:20px}
 .lupe-zurueck{left:12px}
@@ -688,7 +709,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
     rgba(24,18,12,.52) 0%, rgba(24,18,12,.30) 38%,
     rgba(24,18,12,.42) 72%, rgba(24,18,12,.66) 100%);
 }
-.gb-text{max-width:26rem;text-align:center;color:#fbf6ec}
+.gb-text{max-width:26rem;text-align:center;color:#fcf5e8}
 .gb-gross{
   font-family:'Great Vibes',cursive;
   font-size:clamp(30px,8.6vw,50px);line-height:1.22;
@@ -701,7 +722,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 }
 .gb-klein{
   margin:0;font-size:clamp(14px,3.9vw,17px);line-height:1.65;
-  color:#e4d9c6;text-shadow:0 2px 16px rgba(16,11,6,.6);
+  color:#e6d9c1;text-shadow:0 2px 16px rgba(16,11,6,.6);
 }
 
 /* ---- Countdown auf den Lichterketten ---- */
@@ -712,7 +733,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   background:linear-gradient(180deg,rgba(20,15,10,.84),rgba(20,15,10,.76) 46%,rgba(20,15,10,.88));
 }
 .countdown .cd-zahl{text-shadow:0 2px 6px rgba(12,8,4,.9),0 4px 26px rgba(12,8,4,.75)}
-.countdown .cd-label,.countdown .cd-fuss{color:#c9b795;text-shadow:0 2px 12px rgba(12,8,4,.7)}
+.countdown .cd-label,.countdown .cd-fuss{color:#cdb48d;text-shadow:0 2px 12px rgba(12,8,4,.7)}
 
 /* ---- Die Location als Bild, darunter die Lageskizze ---- */
 .sek.ort{position:relative}
@@ -761,7 +782,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
     gap:0 clamp(20px,3vw,34px);
   }
   .fam-zeile{border-top:1px solid var(--linie);border-bottom:0}
-  .sek.familien .fam-zeile{border-color:#eed6c8}
+  .sek.familien .fam-zeile{border-color:#ecd5c2}
 
   .dc-farben{gap:26px}
   .grossbild{min-height:clamp(440px,58svh,620px)}
@@ -777,9 +798,11 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   .sek.ablauf > *,.sek.familien > *,.sek.geschenk > *{max-width:44rem}
   .gal-band{max-width:70rem}
   .sek.kopf{max-width:none;padding-inline:clamp(60px,8vw,120px)}
-  /* Der Rahmen ist hochformatig - auf breiten Schirmen mittig halten,
-     sonst zieht er sich zu einem Streifen auseinander */
-  .kulisse-grund{object-fit:cover;object-position:center}
+  /* Auf breiten Schirmen wuerde der hochformatige Rahmen bei voller
+     Breite riesig. Dort deckelt er sich und bleibt mittig. */
+  .kulisse-oben,.kulisse-fuss{
+    left:50%;right:auto;width:min(100%,1100px);translate:-50% 0;
+  }
   .sek.kopf .paarnamen{font-size:clamp(3.4rem,6vw,5rem)}
 }
 
@@ -866,9 +889,9 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .zl-kopf{
   width:clamp(38px,10vw,46px);height:clamp(38px,10vw,46px);
   display:grid;place-items:center;margin:0;
-  color:var(--salbei-tief);
-  border:1px solid #cfdac8;border-radius:50%;
-  background:#f2f6ee;
+  color:var(--olive-tief);
+  border:1px solid #d5d4b6;border-radius:50%;
+  background:#f1f0e0;
   position:relative;z-index:1;
   transition:color .5s var(--ease-out-quart),
              border-color .5s var(--ease-out-quart),
@@ -877,14 +900,14 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 }
 /* Erreichte Stationen stehen im Licht, kommende bleiben zurueck */
 .zl-punkt.erreicht .zl-kopf{
-  color:#f6faf3;border-color:var(--salbei-tief);background:var(--salbei-tief);
+  color:#f7f6ea;border-color:var(--olive-tief);background:var(--olive-tief);
   box-shadow:0 0 0 5px rgba(95,122,88,.13);
 }
-.zl-punkt.erreicht .zl-zeit{color:#4d6647}
+.zl-punkt.erreicht .zl-zeit{color:#5a6339}
 .zl-sym{width:56%;height:56%}
 .zl-zeit{
   font-variant-numeric:tabular-nums;font-weight:700;
-  font-size:var(--t-s);color:var(--salbei-tief);letter-spacing:.06em;
+  font-size:var(--t-s);color:var(--olive-tief);letter-spacing:.06em;
 }
 .zl-titel{
   font-size:var(--t-m);font-weight:700;margin:2px 0 0;line-height:1.25;
@@ -904,9 +927,9 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   left:calc(clamp(38px,10vw,46px) / 2 + 4px);width:1px;
   top:clamp(19px,5vw,23px);bottom:clamp(19px,5vw,23px);
 }
-.zeitleiste::before{background:#cfdac8}
+.zeitleiste::before{background:#d5d4b6}
 .zeitleiste::after{
-  background:var(--salbei-tief);
+  background:var(--olive-tief);
   transform:scaleY(var(--zl-fortschritt,0));transform-origin:top;
   transition:transform .25s linear;
 }
@@ -969,7 +992,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .zusage-knopf:hover{border-color:var(--akzent)}
 .zk-herz{width:16px;height:16px;fill:currentColor;flex:none;opacity:.55}
 .zusage-knopf.ja.gewaehlt{
-  background:var(--salbei-tief);border-color:var(--salbei-tief);color:#f6f2e8;
+  background:var(--olive-tief);border-color:var(--olive-tief);color:#f7f2e7;
 }
 .zusage-knopf.ja.gewaehlt .zk-herz{opacity:1}
 .zusage-knopf.nein.gewaehlt{
@@ -1030,10 +1053,10 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   filter:drop-shadow(0 14px 22px rgba(74,58,32,.22));
   overflow:visible;
 }
-.gb-korpus     {fill:#e9dcc3}
-.gb-front      {fill:#e0d0b2}
-.gb-kante      {fill:none;stroke:#cdbb99;stroke-width:1.4}
-.gb-laschenform{fill:#f3ead9;stroke:#d2c1a1;stroke-width:1}
+.gb-korpus     {fill:#eadbbd}
+.gb-front      {fill:#e2ceaa}
+.gb-kante      {fill:none;stroke:#d0b891;stroke-width:1.4}
+.gb-laschenform{fill:#f4e9d4;stroke:#d5bf99;stroke-width:1}
 .gb-ring       {fill:none;stroke:var(--akzent);stroke-width:1.8;opacity:.55}
 .gb-herz       {fill:var(--akzent);opacity:.8}
 #gb-lasche{
@@ -1053,8 +1076,8 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 
 .gabe-fach{
   max-width:30rem;margin:-6px auto 0;padding:4px 20px 16px;
-  background:linear-gradient(#fffdf7,#f7f1e3);
-  border:1px solid #e2d6bd;border-radius:2px;
+  background:linear-gradient(#fffdf5,#f8f0de);
+  border:1px solid #e4d5b7;border-radius:2px;
   box-shadow:0 16px 26px -18px rgba(74,58,32,.5);
   animation:gabe-auf .62s var(--ease-out-expo) both;
 }
@@ -1197,8 +1220,8 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   position:relative;
   padding:clamp(30px,6vw,44px) clamp(24px,5vw,38px) clamp(26px,5vw,38px);
   background:
-    linear-gradient(#fffdf8,#faf4e8);
-  border:1px solid #e6dbc4;
+    linear-gradient(#fffdf6,#fbf3e4);
+  border:1px solid #e7dabe;
   box-shadow:0 22px 38px -28px rgba(74,58,32,.55);
 }
 /* Geprägtes Monogramm, das man eher ahnt als liest */
@@ -1207,7 +1230,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   position:absolute;right:clamp(10px,3vw,20px);bottom:clamp(4px,2vw,12px);
   font-family:'Great Vibes',cursive;
   font-size:clamp(64px,15vw,104px);line-height:1;
-  color:#8a744a;opacity:.07;pointer-events:none;
+  color:#8c5638;opacity:.07;pointer-events:none;
   text-shadow:0 1px 0 rgba(255,255,255,.9);
 }
 /* Feine Goldlinie als Innenrand - die Kante eines guten Bogens */
@@ -1230,8 +1253,8 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .wi-punkt{
   display:block;position:relative;
   padding:clamp(18px,4vw,24px) clamp(18px,4vw,24px) clamp(18px,4vw,22px);
-  background:linear-gradient(#fffdf8,#f8f2e5);
-  border:1px solid #e7dcc6;
+  background:linear-gradient(#fffdf6,#f9f2e1);
+  border:1px solid #e8dbc0;
   box-shadow:0 12px 20px -16px rgba(74,58,32,.5);
   transition:transform .55s var(--ease-out-quart), box-shadow .55s var(--ease-out-quart);
 }
@@ -1245,7 +1268,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .wi-punkt::after{
   content:"";position:absolute;top:0;right:0;
   border-width:0 16px 16px 0;border-style:solid;
-  border-color:transparent #efe4cd transparent transparent;
+  border-color:transparent #f0e2c6 transparent transparent;
 }
 .wi-sym{
   width:26px;height:26px;color:var(--akzent);margin-bottom:10px;display:block;
@@ -1257,7 +1280,7 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .sek.familien .sek-titel{text-align:center}
 .sek.familien .sek-titel::after{
   content:"";display:block;width:52px;height:1px;
-  margin:16px auto 0;background:var(--rose-tief);opacity:.55;
+  margin:16px auto 0;background:var(--lehm-tief);opacity:.55;
 }
 
 /* ---- Die Lageskizze zeichnet sich selbst ----
@@ -1285,8 +1308,8 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
   padding:clamp(30px,7vw,44px) 22px clamp(42px,9vw,56px);
   border:0;cursor:pointer;position:relative;
   color:var(--tinte-weich);text-align:center;
-  background:linear-gradient(#fff,#fdfbf6);
-  box-shadow:0 1px 0 #eee7d8, 0 16px 26px -18px rgba(74,58,32,.5);
+  background:linear-gradient(#fff,#fdfaf3);
+  box-shadow:0 1px 0 #efe6d3, 0 16px 26px -18px rgba(74,58,32,.5);
   rotate:-1.1deg;
   transition:rotate .5s var(--ease-out-quart), transform .5s var(--ease-out-quart),
              box-shadow .5s var(--ease-out-quart);
@@ -1295,13 +1318,13 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .upload-feld::before,
 .upload-feld::after{
   content:"";position:absolute;inset:0;z-index:-1;
-  background:#fffdf8;border:1px solid #efe7d6;
+  background:#fffdf6;border:1px solid #f0e6d1;
 }
 .upload-feld::before{rotate:2.4deg;translate:5px 3px}
 .upload-feld::after {rotate:-3.2deg;translate:-6px 5px}
 .upload-feld:hover{
   rotate:0deg;transform:translateY(-4px);
-  box-shadow:0 1px 0 #eee7d8, 0 24px 34px -20px rgba(74,58,32,.55);
+  box-shadow:0 1px 0 #efe6d3, 0 24px 34px -20px rgba(74,58,32,.55);
 }
 .upload-feld svg{width:26px;height:26px;color:var(--akzent)}
 .sek.erinnerung .upload{padding-block:6px}
@@ -1312,19 +1335,19 @@ body.hell-oben .sprachwahl,body.hell-oben .musikknopf{
 .sek.rsvp .formular{
   position:relative;margin-top:22px;
   padding:clamp(30px,6vw,42px) clamp(20px,5vw,30px) clamp(24px,5vw,32px);
-  background:linear-gradient(#fffdf8,#faf5ea);
-  border:1px solid #e5dac3;
+  background:linear-gradient(#fffdf6,#faf4e6);
+  border:1px solid #e6d9bd;
   box-shadow:0 20px 34px -26px rgba(74,58,32,.5);
 }
 /* Die Perforationslinie samt Loechern */
 .sek.rsvp .formular::before{
   content:"";position:absolute;left:14px;right:14px;top:15px;height:1px;
-  background:repeating-linear-gradient(90deg,#cfc0a2 0 5px,transparent 5px 11px);
+  background:repeating-linear-gradient(90deg,#d2be9a 0 5px,transparent 5px 11px);
 }
 .sek.rsvp .formular::after{
   content:"R . S . V . P .";
   position:absolute;left:50%;top:15px;translate:-50% -50%;
-  padding:0 12px;background:#fdfaf2;
+  padding:0 12px;background:#fdf9ef;
   font-size:.62rem;letter-spacing:.34em;color:var(--akzent);
 }
 .sek.rsvp{position:relative}

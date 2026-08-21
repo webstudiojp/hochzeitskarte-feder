@@ -235,33 +235,33 @@
     s.innerHTML =
       '<defs>'
       + '<linearGradient id="k-park" x1="0" y1="0" x2="0" y2="1">'
-      +   '<stop offset="0%" stop-color="#dfe7d6"/><stop offset="100%" stop-color="#cddbc6"/>'
+      +   '<stop offset="0%" stop-color="#e0e2c8"/><stop offset="100%" stop-color="#cfd6b6"/>'
       + '</linearGradient>'
       + '<linearGradient id="k-wasser" x1="0" y1="0" x2="1" y2="0">'
-      +   '<stop offset="0%" stop-color="#c3d6dd"/><stop offset="100%" stop-color="#a9c4ce"/>'
+      +   '<stop offset="0%" stop-color="#c6d2d4"/><stop offset="100%" stop-color="#aebfc0"/>'
       + '</linearGradient>'
       + '</defs>'
-      + '<rect width="320" height="200" fill="#f2ece0"/>'
+      + '<rect width="320" height="200" fill="#f4ecdc"/>'
       + '<path d="M0 104 C54 92 92 122 148 118 C210 113 248 142 320 132 L320 200 L0 200 Z" fill="url(#k-park)"/>'
-      + '<path d="M0 118 C52 108 96 134 150 130 C214 126 252 152 320 144" fill="none" stroke="#bccdb4" stroke-width="1.2"/>'
-      + '<g fill="#b9cdb0" opacity=".75">'
+      + '<path d="M0 118 C52 108 96 134 150 130 C214 126 252 152 320 144" fill="none" stroke="#c0c8a4" stroke-width="1.2"/>'
+      + '<g fill="#bdc8a0" opacity=".75">'
       +   '<circle cx="42" cy="150" r="9"/><circle cx="56" cy="158" r="7"/><circle cx="30" cy="162" r="6.5"/>'
       +   '<circle cx="268" cy="160" r="8.5"/><circle cx="283" cy="168" r="6.5"/><circle cx="118" cy="170" r="7"/>'
       + '</g>'
       + '<path d="M234 0 C246 44 226 78 238 118 C248 152 234 178 246 200" fill="none" stroke="url(#k-wasser)" stroke-width="10" stroke-linecap="round"/>'
-      + '<path d="M0 58 L320 42" stroke="#e6dbc6" stroke-width="8" fill="none" stroke-linecap="round"/>'
-      + '<path d="M0 58 L320 42" stroke="#d5c7ac" stroke-width="1" fill="none" stroke-dasharray="7 7"/>'
-      + '<path class="k-weg" d="M72 200 L96 104 L188 88" stroke="#e6dbc6" stroke-width="5.5" fill="none" stroke-linecap="round"/>'
-      + '<path class="k-weg" d="M96 104 L58 50" stroke="#ece3d2" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      + '<path d="M0 58 L320 42" stroke="#e8d9c0" stroke-width="8" fill="none" stroke-linecap="round"/>'
+      + '<path d="M0 58 L320 42" stroke="#d8c4a4" stroke-width="1" fill="none" stroke-dasharray="7 7"/>'
+      + '<path class="k-weg" d="M72 200 L96 104 L188 88" stroke="#e8d9c0" stroke-width="5.5" fill="none" stroke-linecap="round"/>'
+      + '<path class="k-weg" d="M96 104 L58 50" stroke="#eee2cd" stroke-width="3" fill="none" stroke-linecap="round"/>'
       + '<g>'
-      +   '<rect x="150" y="72" width="48" height="30" rx="1.5" fill="#e0d3ba" stroke="#c9b795" stroke-width="1"/>'
-      +   '<rect x="164" y="63" width="20" height="10" rx="1.5" fill="#e0d3ba" stroke="#c9b795" stroke-width="1"/>'
-      +   '<path d="M150 82 h48" stroke="#c9b795" stroke-width=".8"/>'
+      +   '<rect x="150" y="72" width="48" height="30" rx="1.5" fill="#e3d1b2" stroke="#cdb48d" stroke-width="1"/>'
+      +   '<rect x="164" y="63" width="20" height="10" rx="1.5" fill="#e3d1b2" stroke="#cdb48d" stroke-width="1"/>'
+      +   '<path d="M150 82 h48" stroke="#cdb48d" stroke-width=".8"/>'
       + '</g>'
       + '<g class="k-nadel">'
       +   '<ellipse class="k-schatten" cx="174" cy="63" rx="7" ry="2.4" fill="#8a7550" opacity=".3"/>'
-      +   '<path d="M174 40 a12 12 0 1 1 .01 0 M174 40 L174 62" fill="none" stroke="#a8894e" stroke-width="2.4" stroke-linecap="round"/>'
-      +   '<circle cx="174" cy="28" r="4.6" fill="#a8894e"/>'
+      +   '<path d="M174 40 a12 12 0 1 1 .01 0 M174 40 L174 62" fill="none" stroke="#b5623c" stroke-width="2.4" stroke-linecap="round"/>'
+      +   '<circle cx="174" cy="28" r="4.6" fill="#b5623c"/>'
       + '</g>';
     halter.appendChild(s);
 
@@ -930,7 +930,7 @@
     // Auf dem hellen Leinengrund verschwindet zartes Pastell. Die Toene
     // sind deshalb deutlich gesetzt und die Deckkraft regelt die Ruhe.
     const G = { salbei:'#a7bd9b', salbeiTief:'#7e9673', rose:'#e5b49c', roseTief:'#c98a6c',
-                sand:'#d9bd8a', gold:'#b8933f', creme:'#ecd9b8', himmel:'#9dbdd0',
+                sand:'#d9bd8a', gold:'#a85a34', creme:'#ecd9b8', himmel:'#9dbdd0',
                 weiss:'#ffffff' };
 
     // Der Brief: hier hat jemand mit der Feder geschrieben
