@@ -28,7 +28,6 @@
   const scene   = $('scene');
   const car     = $('car');
   const heartEl = $('heart');
-  const maskR   = $('reveal-rect');
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const T = k => k * (C.hero.tempo || 1);
@@ -71,78 +70,264 @@
   })();
 
   /* ---------------------------------------------------------
-     3. Der Schriftzug auf dem Blatt
+     3. Der Schriftzug entsteht als echter Schreibpfad
+
+     Kein Textelement, keine Umrissschrift: SCHREIBSCHRIFT liefert
+     die Namen als Folge einzelner Linienzuege - in genau der
+     Reihenfolge, in der eine Hand sie zoege. Aus diesen Zuegen
+     wird ein einziger Pfad. Er ist zugleich
+       - die Tinte (ueber stroke-dashoffset waechst sie mit),
+       - die Fuehrungsschiene der Feder (getPointAtLength).
+     Beides aus derselben Quelle - deshalb kann die Spitze gar
+     nicht mehr neben der Schrift liegen.
      --------------------------------------------------------- */
+
+  // Breitfeder: mehrere deckungsgleiche Lagen, entlang der Federkante
+  // gegeneinander versetzt. Wo der Zug quer zur Kante laeuft, addieren
+  // sich die Lagen zum breiten Abstrich; laengs dazu bleibt ein
+  // Haarstrich. Alle Lagen sind gleich lang - eine Animation genuegt.
+  // winkel: Lage der Federkante. Senkrecht dazu liegt die Schattenachse -
+  //   bei -35 Grad laufen genau die geneigten Abstriche der Schrift breit,
+  //   die Auf- und Querstriche bleiben Haarlinien. Das ist der Kontrast,
+  //   von dem eine Kupferstichschrift lebt.
+  const NIB = { winkel: -35, breite: 2.6, lagen: 15, strich: 0.34 };
+
+  let schreib = null;   // { lagen, mess, laenge, grenzen, ox, oy, s }
+
+  function zeilenAufteilen(txt) {
+    // "Furkan & Dilara" wird zur klassischen Anordnung:
+    //   Furkan / & / Dilara  - so steht es auf gedruckten Karten,
+    // und die Feder setzt zwischen den Zeilen sichtbar neu an.
+    const m = txt.split(/\s*(&|\bund\b|\bve\b)\s*/i);
+    if (m.length === 3 && m[0] && m[2]) return [m[0], m[1], m[2]];
+    return [txt];
+  }
+
   function schriftSetzen() {
     const txt = (C.hero.schriftzug || C.namen || '').trim();
     const g = $('script-group');
     g.innerHTML = '';
-    g.removeAttribute('transform');
+    if (!window.SCHREIBSCHRIFT || !txt) return;
 
-    const t = el('text', {
-      'text-anchor': 'middle', x: 0, y: 0,
-      fill: '#2a1a12', stroke: 'none',
-      'font-family': "'Great Vibes', cursive", 'font-size': 200,
-    });
-    t.textContent = txt;
-    g.appendChild(t);
+    const S = window.SCHREIBSCHRIFT;
+    const zeilen = zeilenAufteilen(txt);
+    const gesetzt = zeilen.map(z => S.setzen(z));
 
-    const bb = t.getBBox();
+    // Die Verbindungszeile ("&") steht kleiner und eingerueckt
+    const klein = gesetzt.length === 3 ? [1, 0.62, 1] : [1];
+    const breiteMax = Math.max.apply(null, gesetzt.map((r, i) => r.breite * klein[i]));
+
     const platz = (BLATT.rechts - BLATT.links) - RAND * 2;
-    const groesse = Math.min(200 * (platz / bb.width), 132);
-    t.setAttribute('font-size', groesse);
+    // Unter dem Namen bleiben Herz und Siegel stehen - der Text darf
+    // sich diesen Streifen nicht nehmen, sonst schreibt er ins Siegel.
+    const FUSS = 200;
+    const hochRaum = (BLATT.unten - BLATT.oben) - RAND * 2 - FUSS;
+    const zeilenhoehe = 30;                       // in Schrifteinheiten
+    const hochBedarf = (gesetzt.length - 1) * zeilenhoehe + 34;
+    const s = Math.min(platz / breiteMax, hochRaum / hochBedarf, 4.6);
 
-    const bb2 = t.getBBox();
+    // Alle Zeilen mittig, der Block mittig auf dem Blatt
     const mitte = (BLATT.links + BLATT.rechts) / 2;
-    t.setAttribute('transform',
-      'translate(' + mitte + ',' + ZEILE + ') translate(0,' + (-(bb2.y + bb2.height / 2)).toFixed(1) + ')');
+    const blockH = ((gesetzt.length - 1) * zeilenhoehe) * s;
+    const feldMitte = (BLATT.oben + RAND + BLATT.unten - RAND - FUSS) / 2;
+    const oy = feldMitte - blockH / 2 - 8 * s;
 
-    // Der geschriebene Bereich, an dem sich die Feder orientiert
-    const nach = t.getBBox();
-    schrift = {
-      links: mitte + nach.x - bb2.x * 0 - nach.width / 2 + nach.width / 2 - nach.width / 2,
-      breite: nach.width,
-      knoten: t,
-    };
-    schrift.links = mitte - nach.width / 2;
-    schrift.rechts = mitte + nach.width / 2;
+    const striche = [];
+    gesetzt.forEach((r, i) => {
+      const f = klein[i];
+      const dx = -(r.breite * f) / 2;
+      const dy = i * zeilenhoehe;
+      r.striche.forEach(d => striche.push(
+        d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g,
+          (_, a, b) => (Number(a) * f + dx).toFixed(2) + ',' + (Number(b) * f + dy - 22 * f + 22).toFixed(2))
+      ));
+    });
 
-    heartEl.setAttribute('stroke-width', Math.max(3.4, groesse * 0.036).toFixed(2));
+    g.setAttribute('transform', 'translate(' + mitte.toFixed(1) + ',' + oy.toFixed(1) + ') scale(' + s.toFixed(4) + ')');
+
+    // Ein Pfad je Schreibzug. Die Federlagen liegen als Unterpfade darin -
+    // und weil SVG das Strichmuster bei jedem Unterpfad neu beginnt,
+    // enthuellt ein einziger stroke-dashoffset alle Lagen eines Zuges
+    // exakt gleich weit. Ein gemeinsamer Pfad fuer den ganzen Namen
+    // scheitert genau daran: dort bekaeme jeder Buchstabe sein eigenes
+    // Muster und stuende von der ersten Sekunde an komplett da.
+    const a = NIB.winkel * Math.PI / 180;
+    const ux = Math.cos(a), uy = Math.sin(a);
+    const versetzen = (dd, dx, dy) => dd.replace(
+      /(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g,
+      (_, q, r) => (Number(q) + dx).toFixed(2) + ',' + (Number(r) + dy).toFixed(2));
+    function lagern(dd) {
+      const k = [];
+      for (let i = 0; i < NIB.lagen; i++) {
+        const t = (i / (NIB.lagen - 1) - 0.5) * NIB.breite;
+        k.push(versetzen(dd, ux * t, uy * t));
+      }
+      return k.join(' ');
+    }
+
+    // Jeden Zug ausmessen: eigene Laenge, Platz im Gesamtweg, und wie
+    // weit die Feder danach bis zum naechsten Ansatz springen muss.
+    const zuege = [], grenzen = [], spruenge = [], pausen = [];
+    let summe = 0, vorEnde = null;
+    const tmp = el('path', { fill: 'none' });
+    g.appendChild(tmp);
+
+    striche.forEach(st => {
+      tmp.setAttribute('d', st);
+      const L = tmp.getTotalLength();
+      const anfang = tmp.getPointAtLength(0);
+      if (vorEnde) {
+        const w = Math.hypot(anfang.x - vorEnde.x, anfang.y - vorEnde.y);
+        spruenge.push(w);
+        // Der Weg hinunter in die naechste Zeile kostet mehr Zeit als
+        // der kurze Hupfer zum Tuepfelchen auf dem i.
+        pausen.push(Math.min(46, 5 + w * 0.5));
+      }
+      const knoten = el('path', {
+        d: lagern(st), fill: 'none', stroke: '#241509',
+        'stroke-width': NIB.strich, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+        'stroke-dasharray': L, 'stroke-dashoffset': L,
+      });
+      g.appendChild(knoten);
+      zuege.push({ el: knoten, start: summe, laenge: L, stand: L });
+      summe += L;
+      grenzen.push(summe);
+      vorEnde = tmp.getPointAtLength(L);
+    });
+    g.removeChild(tmp);
+
+    // Unsichtbare Zwillingsbahn ueber alle Zuege: auf ihr misst die Feder
+    // ihren Standort, denn hier laeuft die Laengenrechnung durchgehend.
+    const bahn = el('path', { d: striche.join(' '), fill: 'none', stroke: 'none' });
+    g.appendChild(bahn);
+    const laenge = bahn.getTotalLength();
+
+    let gesamt = laenge;
+    pausen.forEach(x => { gesamt += x; });
+
+    schreib = { zuege: zuege, mess: bahn, laenge: laenge, grenzen: grenzen,
+                spruenge: spruenge, pausen: pausen, gesamt: gesamt,
+                ox: mitte, oy: oy, s: s };
+
+    heartEl.setAttribute('stroke-width', Math.max(3.4, s * 1.1).toFixed(2));
     if (!C.hero.herzZeigen) heartEl.style.display = 'none';
+
+    // Herz und Siegel standen bisher auf festen Koordinaten - bei drei
+    // Zeilen schrieb der Name mitten hinein. Jetzt richten sie sich an
+    // der Unterkante des tatsaechlichen Schriftblocks aus.
+    const bb = g.getBBox();
+    const textUnten = oy + (bb.y + bb.height) * s;
+    const fussRaum = (BLATT.unten - RAND) - textUnten;
+
+    const hb = heartEl.getBBox();
+    const hZiel = textUnten + Math.min(58, fussRaum * 0.26);
+    const hSkala = Math.max(0.62, Math.min(1, fussRaum / 330));
+    heartEl.setAttribute('transform',
+      'translate(' + (mitte - (hb.x + hb.width / 2)).toFixed(1) + ',' +
+      (hZiel - hb.y).toFixed(1) + ') ' +
+      'translate(' + (hb.x + hb.width / 2).toFixed(1) + ',' + hb.y.toFixed(1) + ') ' +
+      'scale(' + hSkala.toFixed(3) + ') ' +
+      'translate(' + (-(hb.x + hb.width / 2)).toFixed(1) + ',' + (-hb.y).toFixed(1) + ')');
+
+    // Das Siegel sitzt am Blattfuss, nie ueber der Kante
+    const sg = $('siegel-gruppe');
+    const sb = sg.getBBox();
+    const sZiel = Math.min(BLATT.unten - RAND * 0.4 - sb.height,
+                           hZiel + hb.height * hSkala + 34);
+    schreib.siegelVersatz = { x: mitte - (sb.x + sb.width / 2), y: sZiel - sb.y };
+    schreib.siegelMitte = { x: mitte, y: sZiel + sb.height / 2 };
+    sg.setAttribute('transform',
+      'translate(' + schreib.siegelVersatz.x.toFixed(1) + ',' + schreib.siegelVersatz.y.toFixed(1) + ')');
   }
-  let schrift = { links: 340, rechts: 710, breite: 370 };
 
   /* ---------------------------------------------------------
-     4. Die Feder folgt dem Schreibpunkt
+     4. Die Feder sitzt auf der Tintenspitze - nicht daneben
+
+     Die Position kommt aus dem Schreibpfad selbst. Die Neigung
+     folgt der Tangente nur zu einem Bruchteil: eine Hand dreht
+     die Feder beim Schreiben kaum, sie haelt sie schraeg und
+     bewegt den Arm. Genau das war vorher falsch.
      --------------------------------------------------------- */
   const federEl = $('feder');
   const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const FEDER_NEIGUNG = -33;
 
-  function federSetzen(p, sichtbar) {         // p: 0..1 entlang der Zeile
-    const x = schrift.links + (schrift.rechts - schrift.links) * p;
-    // Die Hand hebt und senkt sich beim Schreiben, das laeuft nie schnurgerade
-    const wippe = Math.sin(p * Math.PI * 9) * 7 + Math.sin(p * Math.PI * 23) * 2.5;
-    const neigung = -22 + Math.sin(p * Math.PI * 6) * 2.5;
+  function amPfad(l) {
+    const p = schreib.mess.getPointAtLength(Math.max(0, Math.min(schreib.laenge, l)));
+    return { x: schreib.ox + p.x * schreib.s, y: schreib.oy + p.y * schreib.s };
+  }
+
+  function federAufPfad(l, hebung, weite, sichtbar) {
+    const hier = amPfad(l);
+    const dort = amPfad(Math.min(schreib.laenge, l + 1.6));
+    const winkel = Math.atan2(dort.y - hier.y, dort.x - hier.x) * 180 / Math.PI;
+
+    // Beim Absetzen loest sich die Spitze vom Papier: sie steigt, kippt
+    // etwas auf und kommt der Kamera minimal naeher.
+    const hoch = hebung * Math.min(58, 12 + weite * schreib.s * 0.5);
+    const gr   = 1 + hebung * 0.05;
+    // Eine Hand ist ruhig, aber nicht starr
+    const zittern = Math.sin(l * 0.9) * 0.5 + Math.sin(l * 2.7) * 0.22;
+    const neigung = FEDER_NEIGUNG + winkel * 0.13 + zittern - hebung * 6;
+
     federEl.setAttribute('transform',
-      'translate(' + x.toFixed(1) + ',' + (ZEILE + wippe).toFixed(1) + ') rotate(' + neigung.toFixed(1) + ')');
+      'translate(' + hier.x.toFixed(2) + ',' + (hier.y - hoch).toFixed(2) + ') ' +
+      'rotate(' + neigung.toFixed(2) + ') scale(' + gr.toFixed(4) + ')');
     federEl.setAttribute('opacity', sichtbar.toFixed(2));
+  }
+
+  /* Die Tinte reicht immer exakt bis dorthin, wo die Spitze steht:
+     der laufende Zug waechst mit, die davor stehen fertig da, die
+     dahinter warten unsichtbar. */
+  function tinteSetzen(l) {
+    const z = schreib.zuege;
+    for (let i = 0; i < z.length; i++) {
+      const t = z[i];
+      const off = l >= t.start + t.laenge ? 0
+                : l <= t.start            ? t.laenge
+                : t.start + t.laenge - l;
+      if (t.stand !== off) { t.el.setAttribute('stroke-dashoffset', off.toFixed(2)); t.stand = off; }
+    }
   }
 
   /* ---------------------------------------------------------
      5. Der Ablauf
+
+     Zwischen zwei Zuegen haelt die Feder an und hebt ab - und
+     zwar umso laenger, je weiter der Weg zum naechsten Ansatz
+     ist. Der Sprung von "Furkan" hinunter zu "Dilara" dauert
+     deshalb sichtbar laenger als der Punkt auf dem i.
      --------------------------------------------------------- */
-  function maskeSetzen(p) {
-    maskR.setAttribute('x', schrift.links - 20);
-    maskR.setAttribute('width', ((schrift.rechts - schrift.links + 40) * p).toFixed(1));
+  function schreibPunkt(p) {
+    const g = schreib.grenzen, n = g.length;
+    let v = p * schreib.gesamt;
+    for (let i = 0; i < n - 1; i++) {
+      if (v <= g[i]) return { l: v, hebung: 0, weite: 0 };
+      const pause = schreib.pausen[i];
+      v -= pause;
+      if (v < g[i]) {
+        const a = (g[i] - v) / pause;                 // 1 am Anfang, 0 am Ende
+        return { l: g[i], hebung: Math.sin((1 - a) * Math.PI), weite: schreib.spruenge[i] };
+      }
+    }
+    return { l: Math.min(v, schreib.laenge), hebung: 0, weite: 0 };
   }
 
   function endzustand() {
-    maskR.setAttribute('x', 0);
-    maskR.setAttribute('width', 1000);
+    if (schreib) {
+      tinteSetzen(schreib.laenge);
+    }
     federEl.setAttribute('opacity', 0);
+    const tg = $('tinte-gruppe');
+    if (tg) tg.setAttribute('filter', 'url(#tinte)');   // jetzt erst die Tintenstruktur
     if (C.hero.herzZeigen) heartEl.setAttribute('opacity', 1);
-    $('siegel-gruppe').setAttribute('opacity', 1);
-    $('siegel-gruppe').style.transform = 'none';
+    const sg2 = $('siegel-gruppe');
+    sg2.setAttribute('opacity', 1);
+    sg2.style.transform = 'none';
+    if (schreib && schreib.siegelVersatz) {
+      sg2.setAttribute('transform', 'translate(' + schreib.siegelVersatz.x.toFixed(1) +
+        ',' + schreib.siegelVersatz.y.toFixed(1) + ')');
+    }
     $('hero-caption').classList.add('show');
     $('scroll-cue').classList.add('show');
     $('skip').hidden = true;
@@ -167,56 +352,63 @@
   function fahrtStarten() {
     if (laeuft) return;
     laeuft = true;
-    if (reduced) { endzustand(); return; }
+    if (!schreib) schriftSetzen();
+    if (reduced || !schreib) { endzustand(); return; }
     if (C.hero.ueberspringbar) $('skip').hidden = false;
 
     const t0 = performance.now();
-    const ANSCHWEBEN = T(1150);                    // Feder kommt ins Bild
-    const SCHREIBEN  = T(5200);                    // Namen entstehen
-    const ABHEBEN    = T(900);                     // Feder verlaesst das Blatt
+    const ANSCHWEBEN = T(1150);
+    const SCHREIBEN  = T(6200);
+    const ABHEBEN    = T(900);
     const HERZ       = T(700);
     const SIEGEL     = T(900);
     const s1 = ANSCHWEBEN, s2 = s1 + SCHREIBEN, s3 = s2 + ABHEBEN,
           s4 = s3 + HERZ, s5 = s4 + SIEGEL;
 
     const siegel = $('siegel-gruppe');
+    const start = amPfad(0);
+    const ende  = amPfad(schreib.laenge);
 
     function frame(now) {
       if (abbruch) return;
       const t = now - t0;
 
       if (t < s1) {
-        // Anschweben von rechts unten, noch neben dem Blatt
+        // Die Feder kommt von rechts unten heran und senkt sich auf den
+        // ersten Ansatzpunkt - genau dorthin, wo der erste Zug beginnt.
         const p = easeIO(t / s1);
-        const x = schrift.rechts + 210 - (schrift.rechts + 210 - schrift.links) * p;
-        const y = ZEILE + 260 - 260 * p;
+        const x = start.x + 250 * (1 - p);
+        const y = start.y + 300 * (1 - p);
         federEl.setAttribute('transform',
-          'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') rotate(' + (-34 + 12 * p).toFixed(1) + ')');
+          'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') ' +
+          'rotate(' + (-38 + 14 * p).toFixed(1) + ') scale(' + (1.1 - 0.1 * p).toFixed(3) + ')');
         federEl.setAttribute('opacity', Math.min(1, p * 1.7).toFixed(2));
       } else if (t < s2) {
-        // Schreiben: die Tinte reicht immer exakt bis zur Federspitze
         const p = (t - s1) / SCHREIBEN;
-        maskeSetzen(p);
-        federSetzen(p, 1);
+        const z = schreibPunkt(p);
+        tinteSetzen(z.l);
+        federAufPfad(z.l, z.hebung, z.weite, 1);
       } else if (t < s3) {
-        const p = (t - s2) / ABHEBEN;
-        maskeSetzen(1);
-        const x = schrift.rechts + 150 * p;
-        const y = ZEILE - 150 * p;
+        // Abheben vom letzten Buchstaben weg, nach rechts oben aus dem Bild
+        const p = easeIO((t - s2) / ABHEBEN);
+        tinteSetzen(schreib.laenge);
         federEl.setAttribute('transform',
-          'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') rotate(' + (-22 - 16 * p).toFixed(1) + ')');
+          'translate(' + (ende.x + 190 * p).toFixed(1) + ',' + (ende.y - 210 * p).toFixed(1) + ') ' +
+          'rotate(' + (FEDER_NEIGUNG - 18 * p).toFixed(1) + ') scale(' + (1 + 0.09 * p).toFixed(3) + ')');
         federEl.setAttribute('opacity', (1 - p).toFixed(2));
       } else if (t < s4) {
         federEl.setAttribute('opacity', 0);
         if (C.hero.herzZeigen) heartEl.setAttribute('opacity', ((t - s3) / HERZ).toFixed(2));
       } else if (t < s5) {
-        // Das Siegel wird aufgedrueckt: von oben heran und kurz nachfedern
         const p = (t - s4) / SIEGEL;
         const e = easeIO(Math.min(1, p * 1.25));
         const gr = 1.7 - 0.7 * e;
+        const m = schreib.siegelMitte, v = schreib.siegelVersatz;
         siegel.setAttribute('opacity', Math.min(1, p * 2.4).toFixed(2));
         siegel.setAttribute('transform',
-          'translate(502,1191) scale(' + gr.toFixed(3) + ') translate(-502,-1191)');
+          'translate(' + m.x.toFixed(1) + ',' + m.y.toFixed(1) + ') scale(' + gr.toFixed(3) + ') ' +
+          'translate(' + (-m.x).toFixed(1) + ',' + (-m.y).toFixed(1) + ') ' +
+          'translate(' + v.x.toFixed(1) + ',' + v.y.toFixed(1) + ')');
       } else {
         endzustand();
         return;
